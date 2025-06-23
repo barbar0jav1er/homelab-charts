@@ -1,0 +1,98 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/barbar0jav1er/vite-hono
+  tag: main
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+nameOverride: ""
+fullnameOverride: ""
+
+namespace: finance
+
+config:
+  useActualBudget: "true"
+
+secrets:
+  # Secrets manage method
+  # Options: "create", "external", "existing"
+  management: "create"
+  
+  #  only use when management = "create"
+  data:
+    actualServerUrl: "asdfsad"
+    actualPassword: "asdfasd"
+    actualBudgetId: "asfsadf"
+  
+  # To use and exiting secret (management = "existing")
+  existingSecret:
+    name: ""
+    keys:
+      actualServerUrl: "ACTUAL_SERVER_URL"
+      actualPassword: "ACTUAL_PASSWORD" 
+      actualBudgetId: "ACTUAL_BUDGET_ID"
+
+# External Secrets (opcional - management = "external")
+externalSecret:
+  enabled: false
+  secretStoreRef:
+    name: ""
+    kind: "SecretStore"  # o "ClusterSecretStore"
+  refreshInterval: "15m"
+  data: []
+  # Example:
+  # data:
+  #   - secretKey: "ACTUAL_SERVER_URL"
+  #     remoteRef:
+  #       key: "budget-api/prod"
+  #       property: "server_url"
+
+persistence:
+  enabled: true
+  size: 1Gi
+  accessMode: ReadWriteOnce
+  mountPath: /app/data
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 60
+  timeoutSeconds: 60
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+# Node Selectors, tolerations and affinity
+nodeSelector: {}
+tolerations: []
+affinity: {}
