@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'charts/**'
 
 permissions:
   contents: write
@@ -40,15 +38,3 @@ jobs:
           charts_dir: charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .cr-release-packages
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
