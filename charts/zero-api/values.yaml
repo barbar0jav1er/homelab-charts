@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/barbar0jav1er/vite-hono
-  tag: main
+  repository: ghcr.io/barbar0jav1er/zero-budget
+  tag: 0.1.0-rc
   pullPolicy: Always
 
 imagePullSecrets:
@@ -23,9 +23,9 @@ secrets:
   
   #  only use when management = "create"
   data:
-    actualServerUrl: "asdfsad"
-    actualPassword: "asdfasd"
-    actualBudgetId: "asfsadf"
+    actualServerUrl: ""
+    actualPassword: ""
+    actualBudgetId: ""
   
   # To use and exiting secret (management = "existing")
   existingSecret:

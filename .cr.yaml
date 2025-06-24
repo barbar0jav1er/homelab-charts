@@ -1,0 +1,6 @@
+# cr.yaml en la raíz del proyecto
+owner: tu-usuario
+git-repo: homelab-charts
+pages-branch: gh-pages
+remote: origin
+charts-repo-url: https://barbar0jav1er.github.io/homelab-charts

@@ -3,8 +3,8 @@ name: zero-api
 description: A Helm chart for Zero API application
 type: application
 
-version: 0.2.0
-appVersion: "1.0.0"
+version: 0.1.0-rc
+appVersion: "0.1.0-rc"
 
 home: https://github.com/barbar0jav1er/homelab-charts
 sources:
