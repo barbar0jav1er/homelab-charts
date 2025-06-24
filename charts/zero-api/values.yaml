@@ -23,9 +23,9 @@ secrets:
   
   #  only use when management = "create"
   data:
-    actualServerUrl: "asdfsad"
-    actualPassword: "asdfasd"
-    actualBudgetId: "asfsadf"
+    actualServerUrl: ""
+    actualPassword: ""
+    actualBudgetId: ""
   
   # To use and exiting secret (management = "existing")
   existingSecret:
