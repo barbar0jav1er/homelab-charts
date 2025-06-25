@@ -21,4 +21,24 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/zero-api-0.2.0/zero-api-0.2.0.tgz
     version: 0.2.0
-generated: "2025-06-24T16:55:28.533753639Z"
+  - apiVersion: v2
+    appVersion: 0.1.0-rc
+    created: "2025-06-25T15:40:56.936009093Z"
+    description: A Helm chart for Zero API application
+    digest: 17f986ed8e8157b695212552a391fb0d30e7947db78dd8d3b6d7d539a5e39edf
+    home: https://github.com/barbar0jav1er/homelab-charts
+    keywords:
+    - budget
+    - finance
+    - api
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: zero-api
+    sources:
+    - https://github.com/barbar0jav1er/vite-hono
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/zero-api-0.1.0-rc/zero-api-0.1.0-rc.tgz
+    version: 0.1.0-rc
+generated: "2025-06-25T15:40:56.9360179Z"
