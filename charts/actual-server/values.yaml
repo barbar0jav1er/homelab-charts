@@ -1,0 +1,64 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image: 
+  repository: actualbudget/actual-server
+  tag: ""
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5006
+
+persistence:
+  enabled: false
+  size: 8Gi
+
+actualBudget:
+  port: 5006
+  loginMethod: "password"
+  upload:
+    fileSizeSyncLimitMB: 20
+    syncEncryptedFileSizeLimitMB: 50
+    fileSizeLimitMB: 20
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+
+healthChecks:
+  enabled: true
+  # Health check type: "exec" (official script) or "http" (HTTP request)
+  type: "exec"
+  readiness:
+    path: "/"
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    path: "/"
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations: {}   
+  host: actual.local
+  tls:
+    enabled: true
+    secretName: "actual-server-tls"
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
