@@ -27,6 +27,19 @@ entries:
   pihole:
   - apiVersion: v2
     appVersion: 2025.08.0
+    created: "2025-08-08T18:21:41.865076933Z"
+    description: Pi-hole DNS ad-blocker chart
+    digest: ab10ae4150526e653349b80dd9a22f3184d0ad8b93f26c78c8b0331cb872bf46
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: pihole
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/pihole-0.1.1/pihole-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 2025.08.0
     created: "2025-08-08T16:42:52.066503986Z"
     description: Pi-hole DNS ad-blocker chart
     digest: 9cc928f210748355895d36c5b01f9f86c655a0db04f2e61c2bbd0f6294f74710
@@ -79,4 +92,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/zero-api-0.1.0-rc/zero-api-0.1.0-rc.tgz
     version: 0.1.0-rc
-generated: "2025-08-08T16:42:52.066518043Z"
+generated: "2025-08-08T18:21:41.865094607Z"
