@@ -19,6 +19,7 @@ helm repo update
 | Chart | Description | Version | App Version |
 |-------|-------------|---------|-------------|
 | **actual-server** | Self-hosted personal finance management with Actual Budget | Latest | 25.8.0 |
+| **pihole** | Network-wide DNS ad-blocker with DNSCrypt-proxy integration | Latest | 2025.08.0 |
 | **zero-api** | API service to integrate Actual Budget with ZeroTap mobile app | Latest | - |
 
 ## 💻 Installation Examples
@@ -39,6 +40,25 @@ helm install actual-budget homelab/actual-server \
 helm install actual-budget homelab/actual-server \
   --set persistence.enabled=true \
   --set persistence.size=10Gi
+```
+
+### Pi-hole DNS Ad-Blocker
+Deploy network-wide ad-blocking with encrypted DNS:
+
+```bash
+# Basic installation
+helm install pihole homelab/pihole
+
+# With custom domain and static IP
+helm install pihole homelab/pihole \
+  --set ingress.host=dns.yourdomain.com \
+  --set services.dns.loadBalancerIP=192.168.1.100 \
+  --set password.value=MySecurePassword
+
+# Without DNSCrypt-proxy sidecar
+helm install pihole homelab/pihole \
+  --set sidecar.dnscrypt.enabled=false \
+  --set config.dnsUpstreams="8.8.8.8,1.1.1.1"
 ```
 
 ### Zero API
