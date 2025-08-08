@@ -1,5 +1,5 @@
 # cr.yaml en la raíz del proyecto
-owner: tu-usuario
+owner: barbar0jav1er
 git-repo: homelab-charts
 pages-branch: gh-pages
 remote: origin

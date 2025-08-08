@@ -1,0 +1,19 @@
+apiVersion: v2
+name: actual-server
+description: A Helm chart for Actual Budget - A local-first personal finance tool
+version: 0.1.0
+appVersion: "25.8.0"
+home: https://actualbudget.org
+sources:
+  - https://github.com/actualbudget/actual-server
+  - https://github.com/actualbudget/actual
+maintainers:
+  - name: "Barbaro Javier"
+    email: "barbar0jav1er@callbackhell.run"
+keywords:
+  - finance
+  - budget
+  - personal-finance
+  - actual-server
+type: application
+icon: https://actualbudget.org/img/actual.png
