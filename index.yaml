@@ -1,5 +1,29 @@
 apiVersion: v1
 entries:
+  actual-server:
+  - apiVersion: v2
+    appVersion: 25.8.0
+    created: "2025-08-08T16:01:35.581798944Z"
+    description: A Helm chart for Actual Budget - A local-first personal finance tool
+    digest: 87e71e788129fc598758be800fd47fdcce9f058d323fcc2ca55af104a702f84b
+    home: https://actualbudget.org
+    icon: https://actualbudget.org/img/actual.png
+    keywords:
+    - finance
+    - budget
+    - personal-finance
+    - actual-server
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: actual-server
+    sources:
+    - https://github.com/actualbudget/actual-server
+    - https://github.com/actualbudget/actual
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/actual-server-0.1.0/actual-server-0.1.0.tgz
+    version: 0.1.0
   zero-api:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -41,4 +65,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/zero-api-0.1.0-rc/zero-api-0.1.0-rc.tgz
     version: 0.1.0-rc
-generated: "2025-06-25T15:40:56.9360179Z"
+generated: "2025-08-08T16:01:35.581809273Z"
