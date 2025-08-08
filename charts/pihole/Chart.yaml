@@ -2,7 +2,7 @@ apiVersion: v2
 name: pihole
 description: Pi-hole DNS ad-blocker chart
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "2025.08.0"
 
 maintainers:
