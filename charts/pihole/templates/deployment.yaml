@@ -1,4 +1,3 @@
-# templates/deployment.yaml - Versión 1
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,6 +41,8 @@ spec:
               key: {{ include "pihole.secretKey" . }}
         - name: FTLCONF_dns_upstreams
           value: {{ .Values.config.dnsUpstreams | quote }}
+        - name: FTLCONF_dns_listeningMode
+          value: {{ .Values.config.dnsListeningMode | quote }}
 
         {{- if .Values.resources }}
         resources:
@@ -91,6 +92,3 @@ spec:
         configMap:
           name: {{ include "pihole.fullname" . }}-dnscrypt-config
       {{- end }}
-
-
-      
