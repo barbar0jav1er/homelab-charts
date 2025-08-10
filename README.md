@@ -8,7 +8,7 @@ Add the repository to your Helm:
 
 ```bash
 # Add the repository
-helm repo add homelab https://barbar0jav1er.github.io/homelab-charts
+helm repo add barbar0jav1er https://barbar0jav1er.github.io/homelab-charts
 
 # Update repositories
 helm repo update
@@ -20,7 +20,6 @@ helm repo update
 |-------|-------------|---------|-------------|
 | **actual-server** | Self-hosted personal finance management with Actual Budget (supports OpenID Connect) | v0.2.0 | 25.8.0 |
 | **pihole** | Network-wide DNS ad-blocker with DNSCrypt-proxy integration | Latest | 2025.08.0 |
-| **zero-api** | API service to integrate Actual Budget with ZeroTap mobile app | Latest | - |
 
 ## 💻 Installation Examples
 
@@ -69,12 +68,6 @@ helm install pihole homelab/pihole \
   --set config.dnsUpstreams="8.8.8.8,1.1.1.1"
 ```
 
-### Zero API
-API bridge for mobile integration:
-
-```bash
-helm install zero-api homelab/zero-api
-```
 
 ## 🔧 Prerequisites
 
