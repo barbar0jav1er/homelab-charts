@@ -1,7 +1,7 @@
 apiVersion: v2
 name: actual-server
 description: A Helm chart for Actual Budget - A local-first personal finance tool
-version: 0.1.0
+version: 0.2.0
 appVersion: "25.8.0"
 home: https://actualbudget.org
 sources:

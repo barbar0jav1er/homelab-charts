@@ -18,7 +18,7 @@ helm repo update
 
 | Chart | Description | Version | App Version |
 |-------|-------------|---------|-------------|
-| **actual-server** | Self-hosted personal finance management with Actual Budget | Latest | 25.8.0 |
+| **actual-server** | Self-hosted personal finance management with Actual Budget (supports OpenID Connect) | v0.2.0 | 25.8.0 |
 | **pihole** | Network-wide DNS ad-blocker with DNSCrypt-proxy integration | Latest | 2025.08.0 |
 | **zero-api** | API service to integrate Actual Budget with ZeroTap mobile app | Latest | - |
 
@@ -40,6 +40,14 @@ helm install actual-budget homelab/actual-server \
 helm install actual-budget homelab/actual-server \
   --set persistence.enabled=true \
   --set persistence.size=10Gi
+
+# With OpenID Connect authentication
+helm install actual-budget homelab/actual-server \
+  --set actualBudget.loginMethod=openid \
+  --set actualBudget.openid.enabled=true \
+  --set actualBudget.openid.discoveryUrl="https://auth.example.com/.well-known/openid_configuration" \
+  --set actualBudget.openid.clientId="your-client-id" \
+  --set actualBudget.openid.serverHostname="https://budget.yourdomain.com"
 ```
 
 ### Pi-hole DNS Ad-Blocker
