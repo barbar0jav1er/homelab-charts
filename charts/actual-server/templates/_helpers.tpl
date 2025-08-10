@@ -58,3 +58,22 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+OpenID client secret name and key
+*/}}
+{{- define "actual-server.openidSecretName" -}}
+{{- if .Values.actualBudget.openid.clientSecret.existingSecret }}
+{{- .Values.actualBudget.openid.clientSecret.existingSecret }}
+{{- else }}
+{{- printf "%s-openid" (include "actual-server.fullname" .) }}
+{{- end }}
+{{- end }}
+
+{{- define "actual-server.openidSecretKey" -}}
+{{- if .Values.actualBudget.openid.clientSecret.existingSecret }}
+{{- .Values.actualBudget.openid.clientSecret.existingSecretKey | default "client-secret" }}
+{{- else }}
+{{- "client-secret" }}
+{{- end }}
+{{- end }}
