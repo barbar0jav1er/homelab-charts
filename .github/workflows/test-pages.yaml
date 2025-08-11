@@ -63,12 +63,23 @@ jobs:
             exit 1
           fi
 
-      - name: Validate Chart Syntax
+      - name: Validate Charts
         run: |
           for chart in charts/*/; do
             if [ -d "$chart" ]; then
               chart_name=$(basename "$chart")
-              echo "Validating $chart_name..."
+              echo "🔍 Validating chart: $chart_name"
+              echo "================================"
+              
+              # Lint the chart
+              echo "📋 Running helm lint..."
               helm lint "$chart"
+              
+              # Template the chart to check rendering
+              echo "🔧 Testing helm template rendering..."
+              helm template test-release "$chart" --dry-run
+              
+              echo "✅ Chart $chart_name validated successfully"
+              echo ""
             fi
           done
