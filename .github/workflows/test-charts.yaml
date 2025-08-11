@@ -1,0 +1,45 @@
+name: Test Charts
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-charts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+
+      - name: Validate Charts
+        run: |
+          for chart in charts/*/; do
+            if [ -d "$chart" ]; then
+              chart_name=$(basename "$chart")
+              echo "🔍 Validating chart: $chart_name"
+              echo "================================"
+              
+              # Lint the chart
+              echo "📋 Running helm lint..."
+              helm lint "$chart"
+              
+              # Template the chart to check rendering
+              echo "🔧 Testing helm template rendering..."
+              helm template test-release "$chart" --dry-run
+              
+              echo "✅ Chart $chart_name validated successfully"
+              echo ""
+            fi
+          done
