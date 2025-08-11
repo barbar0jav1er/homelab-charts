@@ -8,7 +8,7 @@ Add the repository to your Helm:
 
 ```bash
 # Add the repository
-helm repo add barbar0jav1er https://barbar0jav1er.github.io/homelab-charts
+helm repo add cubancodelab https://charts.cubancodelab.net
 
 # Update repositories
 helm repo update
@@ -28,20 +28,20 @@ Deploy your own personal finance management system:
 
 ```bash
 # Basic installation
-helm install actual-budget homelab/actual-server
+helm install actual-budget cubancodelab/actual-server
 
 # With custom domain and TLS
-helm install actual-budget homelab/actual-server \
+helm install actual-budget cubancodelab/actual-server \
   --set ingress.host=budget.yourdomain.com \
   --set ingress.tls.enabled=true
 
 # With persistent storage
-helm install actual-budget homelab/actual-server \
+helm install actual-budget cubancodelab/actual-server \
   --set persistence.enabled=true \
   --set persistence.size=10Gi
 
 # With OpenID Connect authentication
-helm install actual-budget homelab/actual-server \
+helm install actual-budget cubancodelab/actual-server \
   --set actualBudget.loginMethod=openid \
   --set actualBudget.openid.enabled=true \
   --set actualBudget.openid.discoveryUrl="https://auth.example.com/.well-known/openid_configuration" \
@@ -54,16 +54,16 @@ Deploy network-wide ad-blocking with encrypted DNS:
 
 ```bash
 # Basic installation
-helm install pihole homelab/pihole
+helm install pihole cubancodelab/pihole
 
 # With custom domain and static IP
-helm install pihole homelab/pihole \
+helm install pihole cubancodelab/pihole \
   --set ingress.host=dns.yourdomain.com \
   --set services.dns.loadBalancerIP=192.168.1.100 \
   --set password.value=MySecurePassword
 
 # Without DNSCrypt-proxy sidecar
-helm install pihole homelab/pihole \
+helm install pihole cubancodelab/pihole \
   --set sidecar.dnscrypt.enabled=false \
   --set config.dnsUpstreams="8.8.8.8,1.1.1.1"
 ```
