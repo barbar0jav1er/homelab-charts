@@ -8,7 +8,7 @@ Add the repository to your Helm:
 
 ```bash
 # Add the repository
-helm repo add cubancodelab https://charts.cubancodelab.net
+helm repo add cubancodelab https://helms.cubancodelab.net
 
 # Update repositories
 helm repo update
