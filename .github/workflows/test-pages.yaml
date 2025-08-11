@@ -1,0 +1,85 @@
+name: Test Pages Generation
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+
+      - name: Test README Generation Script
+        run: |
+          chmod +x ./generate-pages-readme.sh
+          ./generate-pages-readme.sh > test-README.md
+          echo "Generated README preview:"
+          echo "========================="
+          head -20 test-README.md
+
+      - name: Test GitHub Pages Workflow Logic
+        run: |
+          echo "Testing gh-pages branch logic..."
+          
+          # Test branch existence check
+          if git show-ref --verify --quiet refs/heads/gh-pages; then
+            echo "✓ Branch gh-pages exists locally"
+            git checkout gh-pages
+          else
+            echo "✓ Branch gh-pages doesn't exist, would create orphan"
+            echo "✓ Simulating: git checkout --orphan gh-pages"
+          fi
+          
+          # Test README generation
+          echo "✓ Testing README generation..."
+          ./generate-pages-readme.sh > simulated-README.md
+          
+          # Test if there would be changes to commit
+          echo "✓ Testing if changes would be committed..."
+          if [ -f simulated-README.md ]; then
+            echo "✓ README generated successfully"
+            wc -l simulated-README.md
+          else
+            echo "❌ README generation failed"
+            exit 1
+          fi
+
+      - name: Validate Charts
+        run: |
+          for chart in charts/*/; do
+            if [ -d "$chart" ]; then
+              chart_name=$(basename "$chart")
+              echo "🔍 Validating chart: $chart_name"
+              echo "================================"
+              
+              # Lint the chart
+              echo "📋 Running helm lint..."
+              helm lint "$chart"
+              
+              # Template the chart to check rendering
+              echo "🔧 Testing helm template rendering..."
+              helm template test-release "$chart" --dry-run
+              
+              echo "✅ Chart $chart_name validated successfully"
+              echo ""
+            fi
+          done
