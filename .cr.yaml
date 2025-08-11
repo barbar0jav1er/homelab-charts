@@ -3,4 +3,4 @@ owner: barbar0jav1er
 git-repo: homelab-charts
 pages-branch: gh-pages
 remote: origin
-charts-repo-url: https://charts.cubancodelab.net
+charts-repo-url: https://helms.cubancodelab.net
