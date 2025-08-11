@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "actual-server.fullname" . }}
+  labels:
+    {{- include "actual-server.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "actual-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "actual-server.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.actualBudget.port }}
+              protocol: TCP
+          env:
+            - name: ACTUAL_PORT
+              value: "{{ .Values.actualBudget.port }}"
+            - name: ACTUAL_DATA_DIR
+              value: "/data"
+            - name: ACTUAL_LOGIN_METHOD
+              value: {{ .Values.actualBudget.loginMethod | quote }}
+            - name: TZ
+              value: {{ .Values.actualBudget.timezone | quote }}
+            - name: ACTUAL_UPLOAD_FILE_SIZE_SYNC_LIMIT_MB
+              value: "{{ .Values.actualBudget.upload.fileSizeSyncLimitMB }}"
+            - name: ACTUAL_UPLOAD_SYNC_ENCRYPTED_FILE_SIZE_LIMIT_MB
+              value: "{{ .Values.actualBudget.upload.syncEncryptedFileSizeLimitMB }}"
+            - name: ACTUAL_UPLOAD_FILE_SIZE_LIMIT_MB
+              value: "{{ .Values.actualBudget.upload.fileSizeLimitMB }}"
+            {{- if .Values.actualBudget.openid.enabled }}
+            {{- if .Values.actualBudget.openid.discoveryUrl }}
+            - name: ACTUAL_OPENID_DISCOVERY_URL
+              value: {{ .Values.actualBudget.openid.discoveryUrl | quote }}
+            {{- else }}
+            {{- if .Values.actualBudget.openid.authorizationEndpoint }}
+            - name: ACTUAL_OPENID_AUTHORIZATION_ENDPOINT
+              value: {{ .Values.actualBudget.openid.authorizationEndpoint | quote }}
+            {{- end }}
+            {{- if .Values.actualBudget.openid.tokenEndpoint }}
+            - name: ACTUAL_OPENID_TOKEN_ENDPOINT
+              value: {{ .Values.actualBudget.openid.tokenEndpoint | quote }}
+            {{- end }}
+            {{- if .Values.actualBudget.openid.userinfoEndpoint }}
+            - name: ACTUAL_OPENID_USERINFO_ENDPOINT
+              value: {{ .Values.actualBudget.openid.userinfoEndpoint | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.actualBudget.openid.clientId }}
+            - name: ACTUAL_OPENID_CLIENT_ID
+              value: {{ .Values.actualBudget.openid.clientId | quote }}
+            {{- end }}
+            {{- if .Values.actualBudget.openid.serverHostname }}
+            - name: ACTUAL_OPENID_SERVER_HOSTNAME
+              value: {{ .Values.actualBudget.openid.serverHostname | quote }}
+            {{- end }}
+            {{- if or .Values.actualBudget.openid.clientSecret.value .Values.actualBudget.openid.clientSecret.existingSecret }}
+            - name: ACTUAL_OPENID_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "actual-server.openidSecretName" . }}
+                  key: {{ include "actual-server.openidSecretKey" . }}
+            {{- end }}
+            {{- end }}
+          {{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.healthChecks.enabled }}
+          readinessProbe:
+            {{- if eq .Values.healthChecks.type "exec" }}
+            exec:
+              command:
+                - node
+                - src/scripts/health-check.js
+            {{- else }}
+            httpGet:
+              path: {{ .Values.healthChecks.readiness.path }}
+              port: http
+            {{- end }}
+            initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.readiness.failureThreshold }}
+          livenessProbe:
+            {{- if eq .Values.healthChecks.type "exec" }}
+            exec:
+              command:
+                - node
+                - src/scripts/health-check.js
+            {{- else }}
+            httpGet:
+              path: {{ .Values.healthChecks.liveness.path }}
+              port: http
+            {{- end }}
+            initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.liveness.failureThreshold }}
+          {{- end }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "actual-server.fullname" . }}-data
+      {{- end }}

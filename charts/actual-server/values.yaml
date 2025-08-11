@@ -1,0 +1,82 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image: 
+  repository: actualbudget/actual-server
+  tag: ""
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5006
+
+persistence:
+  enabled: false
+  size: 8Gi
+
+actualBudget:
+  port: 5006
+  loginMethod: "password"
+  timezone: "Europe/Madrid"
+  upload:
+    fileSizeSyncLimitMB: 20
+    syncEncryptedFileSizeLimitMB: 50
+    fileSizeLimitMB: 20
+  openid:
+    enabled: false
+    # For providers with OpenID discovery support
+    discoveryUrl: ""
+    # For providers without discovery support (use these instead of discoveryUrl)
+    authorizationEndpoint: ""
+    tokenEndpoint: ""
+    userinfoEndpoint: ""
+    # Client configuration
+    clientId: ""
+    serverHostname: ""  # Your Actual Server URL for provider redirects
+    clientSecret:
+      # Option 1: Create new secret with inline value
+      value: ""
+      # Option 2: Use existing secret
+      existingSecret: ""
+      existingSecretKey: "client-secret"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+
+healthChecks:
+  enabled: true
+  # Health check type: "exec" (official script) or "http" (HTTP request)
+  type: "exec"
+  readiness:
+    path: "/"
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    path: "/"
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations: {}   
+  host: actual.local
+  tls:
+    enabled: true
+    secretName: "actual-server-tls"
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
