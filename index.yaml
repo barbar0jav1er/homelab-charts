@@ -1,0 +1,41 @@
+apiVersion: v1
+entries:
+  actual-server:
+  - apiVersion: v2
+    appVersion: 25.8.0
+    created: "2025-08-11T18:50:52.770303923Z"
+    description: A Helm chart for Actual Budget - A local-first personal finance tool
+    digest: 287ad84e069b7b0f4a86fb1adcfec0eca10e42af576929e675707349a0283088
+    home: https://actualbudget.org
+    icon: https://actualbudget.org/img/actual.png
+    keywords:
+    - finance
+    - budget
+    - personal-finance
+    - actual-server
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: actual-server
+    sources:
+    - https://github.com/actualbudget/actual-server
+    - https://github.com/actualbudget/actual
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/actual-server-0.2.0/actual-server-0.2.0.tgz
+    version: 0.2.0
+  pihole:
+  - apiVersion: v2
+    appVersion: 2025.08.0
+    created: "2025-08-11T18:50:52.935312236Z"
+    description: Pi-hole DNS ad-blocker chart
+    digest: 3e5cccc6556d9572a32ba0162cccd807d43367079048313a7e0ddd2799f9f9be
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: pihole
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/pihole-0.1.1/pihole-0.1.1.tgz
+    version: 0.1.1
+generated: "2025-08-11T18:50:52.935317335Z"
