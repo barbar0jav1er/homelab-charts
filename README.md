@@ -18,8 +18,9 @@ helm repo update
 
 | Chart | Description | Version | App Version |
 |-------|-------------|---------|-------------|
-| **actual-server** | Self-hosted personal finance management with Actual Budget (supports OpenID Connect) | v0.2.0 | 25.8.0 |
+| **actual-server** | Self-hosted personal finance management with Actual Budget (supports OpenID Connect) | 0.2.0 | 25.8.0 |
 | **pihole** | Network-wide DNS ad-blocker with DNSCrypt-proxy integration | Latest | 2025.08.0 |
+| **radarr** | Movie collection manager for Usenet and BitTorrent users with PVC support | 0.1.0 | latest |
 
 ## 💻 Installation Examples
 
