@@ -1,0 +1,17 @@
+apiVersion: v2
+name: radarr
+description: A Helm chart for Radarr movie management application
+type: application
+version: 0.1.0
+appVersion: "latest"
+
+keywords:
+  - radarr
+  - movies
+  - sonarr
+  - media
+  - downloads
+
+maintainers:
+  - name: Barbaro Javier
+    email: barbar0jav1er@callbackhell.run

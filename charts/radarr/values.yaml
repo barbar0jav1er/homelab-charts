@@ -1,0 +1,93 @@
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: linuxserver/radarr
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+env:
+  PUID: "1000"
+  PGID: "1000"
+  TZ: "Etc/UTC"
+
+service:
+  type: ClusterIP
+  port: 7878
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: radarr.local
+  tls:
+    enabled: false
+    secretName: radarr-tls
+
+persistence:
+  config:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+  
+  movies:
+    enabled: false
+    size: 50Gi
+    storageClass: ""
+  
+  media:
+    enabled: false
+    existingClaim: ""
+    size: 100Gi
+    storageClass: ""
+    mountPath: "/media"
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 7878
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 7878
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+podSecurityContext: {}
+  # fsGroup: 1000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

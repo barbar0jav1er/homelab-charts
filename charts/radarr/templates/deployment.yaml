@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "radarr.fullname" . }}
+  labels:
+    {{- include "radarr.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "radarr.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "radarr.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "radarr.serviceAccountName" . }}
+      containers:
+      - name: radarr
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 7878
+        env:
+        - name: PUID
+          value: {{ .Values.env.PUID | quote }}
+        - name: PGID
+          value: {{ .Values.env.PGID | quote }}
+        - name: TZ
+          value: {{ .Values.env.TZ | quote }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        {{- if .Values.persistence.movies.enabled }}
+        - name: movies
+          mountPath: /movies
+        {{- end }}
+        {{- if .Values.persistence.media.enabled }}
+        - name: media
+          mountPath: {{ .Values.persistence.media.mountPath }}
+        {{- end }}
+      volumes:
+      - name: config
+        {{- if .Values.persistence.config.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "radarr.fullname" . }}-config
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      {{- if .Values.persistence.movies.enabled }}
+      - name: movies
+        persistentVolumeClaim:
+          claimName: {{ include "radarr.fullname" . }}-movies
+      {{- end }}
+      {{- if .Values.persistence.media.enabled }}
+      - name: media
+        persistentVolumeClaim:
+          claimName: {{ if .Values.persistence.media.existingClaim }}{{ .Values.persistence.media.existingClaim }}{{ else }}{{ include "radarr.fullname" . }}-media{{ end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
