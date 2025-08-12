@@ -38,4 +38,24 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/pihole-0.1.1/pihole-0.1.1.tgz
     version: 0.1.1
-generated: "2025-08-11T18:50:52.935317335Z"
+  radarr:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-08-12T18:46:51.9343688Z"
+    description: A Helm chart for Radarr movie management application
+    digest: 037921c6a8a39b9e172e2b1516a102e29194e6fa72891849f91d41889ef85524
+    keywords:
+    - radarr
+    - movies
+    - sonarr
+    - media
+    - downloads
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: radarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/radarr-0.1.0/radarr-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-08-12T18:46:51.934378298Z"
