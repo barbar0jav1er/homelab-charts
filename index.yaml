@@ -38,6 +38,37 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/pihole-0.1.1/pihole-0.1.1.tgz
     version: 0.1.1
+  qbittorrent:
+  - annotations:
+      category: Media
+      licenses: GPL-2.0-or-later
+    apiVersion: v2
+    appVersion: 5.1.2
+    created: "2025-08-14T17:03:31.141228751Z"
+    description: A Helm chart for qBittorrent with integrated NordVPN for secure torrenting
+    digest: dcba1bcd9385a86ab3b66243dae1deae7f453a9bddf25eca03faa6b3feff2be3
+    home: https://github.com/qbittorrent/qBittorrent
+    keywords:
+    - qbittorrent
+    - torrent
+    - bittorrent
+    - download
+    - client
+    - vpn
+    - nordvpn
+    - privacy
+    - security
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: qbittorrent
+    sources:
+    - https://github.com/qbittorrent/qBittorrent
+    - https://github.com/userdocs/qbittorrent-nox-static
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/qbittorrent-0.2.0/qbittorrent-0.2.0.tgz
+    version: 0.2.0
   radarr:
   - apiVersion: v2
     appVersion: latest
@@ -58,4 +89,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/radarr-0.1.0/radarr-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-12T18:46:51.934378298Z"
+generated: "2025-08-14T17:03:31.141239301Z"
