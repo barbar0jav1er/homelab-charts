@@ -19,8 +19,13 @@ helm repo update
 | Chart | Description | Version | App Version |
 |-------|-------------|---------|-------------|
 | **actual-server** | Self-hosted personal finance management with Actual Budget (supports OpenID Connect) | 0.2.0 | 25.8.0 |
+| **bazarr** | Subtitle management for TV shows and movies, companion to Sonarr/Radarr | 0.1.0 | latest |
+| **flaresolverr** | Cloudflare bypass proxy for indexers with headless browser automation | 0.1.0 | latest |
 | **pihole** | Network-wide DNS ad-blocker with DNSCrypt-proxy integration | Latest | 2025.08.0 |
-| **radarr** | Movie collection manager for Usenet and BitTorrent users with PVC support | 0.1.0 | latest |
+| **prowlarr** | Centralized indexer manager for all *arr applications | 0.1.0 | latest |
+| **qbittorrent** | Secure BitTorrent client with integrated NordVPN for safe downloading | 0.2.0 | 5.1.2 |
+| **radarr** | Movie collection manager with simplified media volume configuration | 0.1.0 | latest |
+| **sonarr** | TV series collection manager with automated episode monitoring | 0.1.0 | latest |
 
 ## 💻 Installation Examples
 
