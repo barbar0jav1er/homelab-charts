@@ -6,49 +6,49 @@
   http://{{ .Values.ingress.host }}
 {{- end }}
 {{- else if contains "NodePort" .Values.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "radarr.fullname" . }})
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "sonarr.fullname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   echo http://$NODE_IP:$NODE_PORT
 {{- else if contains "LoadBalancer" .Values.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "radarr.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "radarr.fullname" . }} --template "{{ "{{" }} range (index .status.loadBalancer.ingress 0) {{ "}}" }}{{ "{{" }}.{{ "}}" }}{{ "{{" }} end {{ "}}" }}")
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "sonarr.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "sonarr.fullname" . }} --template "{{ "{{" }} range (index .status.loadBalancer.ingress 0) {{ "}}" }}{{ "{{" }}.{{ "}}" }}{{ "{{" }} end {{ "}}" }}")
   echo http://$SERVICE_IP:{{ .Values.service.port }}
 {{- else if contains "ClusterIP" .Values.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ include "radarr.name" . }},instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ include "sonarr.name" . }},instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
   export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:7878 to use your application"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 7878:$CONTAINER_PORT
+  echo "Visit http://127.0.0.1:8989 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8989:$CONTAINER_PORT
 {{- end }}
 
-2. Complete the Radarr setup:
+2. Complete the Sonarr setup:
    - Navigate to the web interface using the URL above
    - Complete the initial setup wizard
    - Configure your download clients (qBittorrent, Transmission, etc.)
-   - Add your movie indexers and quality profiles
+   - Add your TV series indexers and quality profiles
 
-{{- if and .Values.persistence.movies.enabled .Values.persistence.downloads.enabled }}
+{{- if and .Values.persistence.tv.enabled .Values.persistence.downloads.enabled }}
 
 3. Your media volumes are mounted at:
-   - Movies: /movies
+   - TV Shows: /tv
    - Downloads: /downloads
-{{- else if .Values.persistence.movies.enabled }}
+{{- else if .Values.persistence.tv.enabled }}
 
-3. Your movies volume is mounted at: /movies
+3. Your TV shows volume is mounted at: /tv
    Note: Downloads volume is not enabled
 {{- else if .Values.persistence.downloads.enabled }}
 
 3. Your downloads volume is mounted at: /downloads
-   Note: Movies volume is not enabled
+   Note: TV shows volume is not enabled
 {{- else }}
 
 3. Note: No media volumes are enabled
    Enable them in values.yaml to access your media files:
    persistence:
-     movies:
+     tv:
        enabled: true
      downloads:
        enabled: true
 {{- end }}
 
-For more information visit: https://wiki.servarr.com/radarr
+For more information visit: https://wiki.servarr.com/sonarr

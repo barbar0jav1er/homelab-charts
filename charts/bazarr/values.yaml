@@ -4,9 +4,9 @@ fullnameOverride: ""
 replicaCount: 1
 
 image:
-  repository: linuxserver/radarr
+  repository: linuxserver/bazarr
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "1.5.2"
 
 env:
   PUID: "1000"
@@ -15,22 +15,23 @@ env:
 
 service:
   type: ClusterIP
-  port: 7878
+  port: 6767
 
 ingress:
-  enabled: false
+  enabled: true
   className: ""
   annotations: {}
-  host: radarr.local
+  host: bazarr.local
   tls:
     enabled: false
-    secretName: radarr-tls
+    secretName: bazarr-tls
 
 persistence:
   config:
     enabled: true
     size: 1Gi
     storageClass: ""
+    existingClaim: ""  # Use existing PVC instead of creating a new one
   
 
   media:
@@ -51,7 +52,7 @@ resources: {}
 livenessProbe:
   httpGet:
     path: /
-    port: 7878
+    port: 6767
   initialDelaySeconds: 60
   periodSeconds: 30
   timeoutSeconds: 5
@@ -60,7 +61,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /
-    port: 7878
+    port: 6767
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5

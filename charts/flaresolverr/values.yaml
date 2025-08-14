@@ -1,0 +1,99 @@
+# Default values for flaresolverr
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/flaresolverr/flaresolverr
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+  # Logging level: debug, info, warning, error
+  LOG_LEVEL: "info"
+  # Browser timeout in milliseconds (default: 40000)
+  BROWSER_TIMEOUT: "40000"
+  # Test URL to check if the service is working
+  TEST_URL: "https://www.google.com"
+  # Port where the service will listen (should match service.port)
+  PORT: "8191"
+  # Captcha solver configuration (optional)
+  # CAPTCHA_SOLVER: "none"  # Options: none, 2captcha, anticaptcha
+  # CAPTCHA_SOLVER_KEY: ""
+
+service:
+  type: ClusterIP
+  port: 8191
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: flaresolverr.local
+  tls:
+    enabled: false
+    secretName: flaresolverr-tls
+
+# FlareSolverr doesn't need persistent storage by default
+# It stores sessions temporarily in memory
+persistence:
+  tmp:
+    enabled: false
+    size: 1Gi
+    storageClass: ""
+    existingClaim: ""  # Use existing PVC instead of creating a new one
+
+resources:
+  # FlareSolverr uses a headless browser, so it needs reasonable resources
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8191
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8191
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+podSecurityContext:
+  # FlareSolverr runs as non-root in the container
+  fsGroup: 1000
+
+securityContext:
+  # Run as non-root user
+  runAsNonRoot: true
+  runAsUser: 1000
+  # Allow network access for proxy functionality
+  capabilities:
+    drop:
+    - ALL
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

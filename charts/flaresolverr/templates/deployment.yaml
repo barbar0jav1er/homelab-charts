@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "radarr.fullname" . }}
+  name: {{ include "flaresolverr.fullname" . }}
   labels:
-    {{- include "radarr.labels" . | nindent 4 }}
+    {{- include "flaresolverr.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "radarr.labels" . | nindent 6 }}
+      {{- include "flaresolverr.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "radarr.labels" . | nindent 8 }}
+        {{- include "flaresolverr.labels" . | nindent 8 }}
     spec:
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "radarr.serviceAccountName" . }}
+      serviceAccountName: {{ include "flaresolverr.serviceAccountName" . }}
       containers:
-      - name: radarr
+      - name: flaresolverr
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -28,14 +28,26 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 7878
+        - name: http
+          containerPort: 8191
+          protocol: TCP
         env:
-        - name: PUID
-          value: {{ .Values.env.PUID | quote }}
-        - name: PGID
-          value: {{ .Values.env.PGID | quote }}
-        - name: TZ
-          value: {{ .Values.env.TZ | quote }}
+        - name: LOG_LEVEL
+          value: {{ .Values.env.LOG_LEVEL | quote }}
+        - name: BROWSER_TIMEOUT
+          value: {{ .Values.env.BROWSER_TIMEOUT | quote }}
+        - name: TEST_URL
+          value: {{ .Values.env.TEST_URL | quote }}
+        - name: PORT
+          value: {{ .Values.env.PORT | quote }}
+        {{- if .Values.env.CAPTCHA_SOLVER }}
+        - name: CAPTCHA_SOLVER
+          value: {{ .Values.env.CAPTCHA_SOLVER | quote }}
+        {{- end }}
+        {{- if .Values.env.CAPTCHA_SOLVER_KEY }}
+        - name: CAPTCHA_SOLVER_KEY
+          value: {{ .Values.env.CAPTCHA_SOLVER_KEY | quote }}
+        {{- end }}
         {{- with .Values.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -48,32 +60,19 @@ spec:
         readinessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        {{- if .Values.persistence.tmp.enabled }}
         volumeMounts:
-        - name: config
-          mountPath: /config
-        {{- if .Values.persistence.media.enabled }}
-        - name: media
-          mountPath: /media
-          {{- if .Values.persistence.media.subPath }}
-          subPath: {{ .Values.persistence.media.subPath }}
-          {{- end }}
+        - name: tmp
+          mountPath: /tmp
         {{- end }}
+      {{- if .Values.persistence.tmp.enabled }}
       volumes:
-      - name: config
-        {{- if .Values.persistence.config.enabled }}
+      - name: tmp
+        {{- if .Values.persistence.tmp.enabled }}
         persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-config
+          claimName: {{ include "flaresolverr.tmpPVCName" . }}
         {{- else }}
         emptyDir: {}
-        {{- end }}
-      {{- if .Values.persistence.media.enabled }}
-      - name: media
-        {{- if .Values.persistence.media.existingClaim }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.persistence.media.existingClaim }}
-        {{- else }}
-        persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-media
         {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}

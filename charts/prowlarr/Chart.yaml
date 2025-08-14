@@ -1,0 +1,19 @@
+apiVersion: v2
+name: prowlarr
+description: A Helm chart for Prowlarr indexer manager for arr applications
+type: application
+version: 0.1.0
+appVersion: "1.37.0"
+
+keywords:
+  - prowlarr
+  - indexer
+  - manager
+  - sonarr
+  - radarr
+  - arr
+  - proxy
+
+maintainers:
+  - name: Barbaro Javier
+    email: barbar0jav1er@callbackhell.run

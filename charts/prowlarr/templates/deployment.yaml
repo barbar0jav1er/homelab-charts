@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "radarr.fullname" . }}
+  name: {{ include "prowlarr.fullname" . }}
   labels:
-    {{- include "radarr.labels" . | nindent 4 }}
+    {{- include "prowlarr.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "radarr.labels" . | nindent 6 }}
+      {{- include "prowlarr.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "radarr.labels" . | nindent 8 }}
+        {{- include "prowlarr.labels" . | nindent 8 }}
     spec:
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "radarr.serviceAccountName" . }}
+      serviceAccountName: {{ include "prowlarr.serviceAccountName" . }}
       containers:
-      - name: radarr
+      - name: prowlarr
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -28,7 +28,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 7878
+        - containerPort: 9696
         env:
         - name: PUID
           value: {{ .Values.env.PUID | quote }}
@@ -51,31 +51,14 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        {{- if .Values.persistence.media.enabled }}
-        - name: media
-          mountPath: /media
-          {{- if .Values.persistence.media.subPath }}
-          subPath: {{ .Values.persistence.media.subPath }}
-          {{- end }}
-        {{- end }}
       volumes:
       - name: config
         {{- if .Values.persistence.config.enabled }}
         persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-config
+          claimName: {{ include "prowlarr.configPVCName" . }}
         {{- else }}
         emptyDir: {}
         {{- end }}
-      {{- if .Values.persistence.media.enabled }}
-      - name: media
-        {{- if .Values.persistence.media.existingClaim }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.persistence.media.existingClaim }}
-        {{- else }}
-        persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-media
-        {{- end }}
-      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -1,14 +1,15 @@
 apiVersion: v2
-name: radarr
-description: A Helm chart for Radarr movie management application
+name: sonarr
+description: A Helm chart for Sonarr TV series management application
 type: application
-version: 0.2.0
+version: 0.1.0
 appVersion: "latest"
 
 keywords:
-  - radarr
-  - movies
   - sonarr
+  - tv
+  - series
+  - radarr
   - media
   - downloads
 

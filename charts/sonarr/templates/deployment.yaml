@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "radarr.fullname" . }}
+  name: {{ include "sonarr.fullname" . }}
   labels:
-    {{- include "radarr.labels" . | nindent 4 }}
+    {{- include "sonarr.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "radarr.labels" . | nindent 6 }}
+      {{- include "sonarr.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "radarr.labels" . | nindent 8 }}
+        {{- include "sonarr.labels" . | nindent 8 }}
     spec:
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "radarr.serviceAccountName" . }}
+      serviceAccountName: {{ include "sonarr.serviceAccountName" . }}
       containers:
-      - name: radarr
+      - name: sonarr
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -28,7 +28,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 7878
+        - containerPort: 8989
         env:
         - name: PUID
           value: {{ .Values.env.PUID | quote }}
@@ -62,7 +62,7 @@ spec:
       - name: config
         {{- if .Values.persistence.config.enabled }}
         persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-config
+          claimName: {{ include "sonarr.configPVCName" . }}
         {{- else }}
         emptyDir: {}
         {{- end }}
@@ -73,7 +73,7 @@ spec:
           claimName: {{ .Values.persistence.media.existingClaim }}
         {{- else }}
         persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-media
+          claimName: {{ include "sonarr.fullname" . }}-media
         {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}

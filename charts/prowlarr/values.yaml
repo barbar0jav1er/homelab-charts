@@ -1,12 +1,14 @@
+# Default values for prowlarr
+
 nameOverride: ""
 fullnameOverride: ""
 
 replicaCount: 1
 
 image:
-  repository: linuxserver/radarr
+  repository: linuxserver/prowlarr
+  tag: latest
   pullPolicy: IfNotPresent
-  tag: "latest"
 
 env:
   PUID: "1000"
@@ -15,30 +17,23 @@ env:
 
 service:
   type: ClusterIP
-  port: 7878
+  port: 9696
 
 ingress:
   enabled: false
   className: ""
   annotations: {}
-  host: radarr.local
+  host: prowlarr.local
   tls:
     enabled: false
-    secretName: radarr-tls
+    secretName: prowlarr-tls
 
 persistence:
   config:
     enabled: true
     size: 1Gi
     storageClass: ""
-  
-
-  media:
-    enabled: false
-    size: 100Gi
-    storageClass: ""
     existingClaim: ""  # Use existing PVC instead of creating a new one
-    subPath: ""        # Subpath within the PVC
 
 resources: {}
   # limits:
@@ -51,7 +46,7 @@ resources: {}
 livenessProbe:
   httpGet:
     path: /
-    port: 7878
+    port: 9696
   initialDelaySeconds: 60
   periodSeconds: 30
   timeoutSeconds: 5
@@ -60,7 +55,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /
-    port: 7878
+    port: 9696
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5

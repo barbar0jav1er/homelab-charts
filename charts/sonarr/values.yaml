@@ -1,12 +1,14 @@
+# Default values for sonarr
+
 nameOverride: ""
 fullnameOverride: ""
 
 replicaCount: 1
 
 image:
-  repository: linuxserver/radarr
+  repository: linuxserver/sonarr
+  tag: latest
   pullPolicy: IfNotPresent
-  tag: "latest"
 
 env:
   PUID: "1000"
@@ -15,22 +17,23 @@ env:
 
 service:
   type: ClusterIP
-  port: 7878
+  port: 8989
 
 ingress:
   enabled: false
   className: ""
   annotations: {}
-  host: radarr.local
+  host: sonarr.local
   tls:
     enabled: false
-    secretName: radarr-tls
+    secretName: sonarr-tls
 
 persistence:
   config:
     enabled: true
     size: 1Gi
     storageClass: ""
+    existingClaim: ""  # Use existing PVC instead of creating a new one
   
 
   media:
@@ -51,7 +54,7 @@ resources: {}
 livenessProbe:
   httpGet:
     path: /
-    port: 7878
+    port: 8989
   initialDelaySeconds: 60
   periodSeconds: 30
   timeoutSeconds: 5
@@ -60,7 +63,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /
-    port: 7878
+    port: 8989
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5

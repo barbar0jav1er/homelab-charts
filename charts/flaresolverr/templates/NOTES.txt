@@ -1,0 +1,52 @@
+1. Get the FlareSolverr URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.tls.enabled }}
+  https://{{ .Values.ingress.host }}
+{{- else }}
+  http://{{ .Values.ingress.host }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "flaresolverr.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "flaresolverr.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "flaresolverr.fullname" . }} --template "{{ "{{" }} range (index .status.loadBalancer.ingress 0) {{ "}}" }}{{ "{{" }}.{{ "}}" }}{{ "{{" }} end {{ "}}" }}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ include "flaresolverr.name" . }},instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8191 to use FlareSolverr"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8191:8191
+{{- end }}
+
+2. FlareSolverr Configuration:
+   - Service URL: http://{{ include "flaresolverr.fullname" . }}:{{ .Values.service.port }}
+   - Log Level: {{ .Values.env.LOG_LEVEL }}
+   - Browser Timeout: {{ .Values.env.BROWSER_TIMEOUT }}ms
+
+3. Integration with *arr Applications:
+   To use FlareSolverr with Prowlarr, Sonarr, or Radarr:
+   - Go to Settings > Indexers in your *arr application
+   - Add FlareSolverr URL: http://{{ include "flaresolverr.fullname" . }}:{{ .Values.service.port }}
+   - Configure indexers that require Cloudflare bypass
+
+4. Testing FlareSolverr:
+   Test if FlareSolverr is working:
+   curl -X POST http://{{ include "flaresolverr.fullname" . }}:{{ .Values.service.port }}/v1 \
+     -H "Content-Type: application/json" \
+     -d '{"cmd": "request.get", "url": "{{ .Values.env.TEST_URL }}"}'
+
+5. Security Notes:
+   - FlareSolverr runs as non-root user (UID 1000)
+   - Only expose via Ingress if necessary
+   - Monitor resource usage as it runs a headless browser
+
+6. Troubleshooting:
+   - Check logs: kubectl logs deployment/{{ include "flaresolverr.fullname" . }}
+   - Verify browser timeout settings for slow websites
+   - Monitor memory usage - increase limits if needed
+
+For more information:
+- FlareSolverr Wiki: https://github.com/FlareSolverr/FlareSolverr/wiki
+- Docker Image: https://github.com/flaresolverr/flaresolverr-docker

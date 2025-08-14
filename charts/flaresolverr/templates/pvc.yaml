@@ -1,0 +1,17 @@
+{{- if and .Values.persistence.tmp.enabled (not .Values.persistence.tmp.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "flaresolverr.tmpPVCName" . }}
+  labels:
+    {{- include "flaresolverr.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.tmp.size }}
+  {{- if .Values.persistence.tmp.storageClass }}
+  storageClassName: {{ .Values.persistence.tmp.storageClass }}
+  {{- end }}
+{{- end }}

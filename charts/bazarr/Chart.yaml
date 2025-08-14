@@ -1,0 +1,17 @@
+apiVersion: v2
+name: bazarr
+description: A Helm chart for Bazarr subtitle management application
+type: application
+version: 0.1.0
+appVersion: "05.07.25"
+
+keywords:
+  - bazarr
+  - subtitles
+  - sonarr
+  - radarr
+  - media
+
+maintainers:
+  - name: Barbaro Javier
+    email: barbar0jav1er@callbackhell.run

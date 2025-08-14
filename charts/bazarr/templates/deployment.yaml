@@ -1,34 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "radarr.fullname" . }}
+  name: {{ include "bazarr.fullname" . }}
   labels:
-    {{- include "radarr.labels" . | nindent 4 }}
+     {{- include "bazarr.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "radarr.labels" . | nindent 6 }}
+      {{- include "bazarr.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "radarr.labels" . | nindent 8 }}
+         {{- include "bazarr.labels" . | nindent 8 }}
     spec:
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "radarr.serviceAccountName" . }}
+      serviceAccountName: {{ include "bazarr.serviceAccountName" . }}
       containers:
-      - name: radarr
+      - name: bazarr
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 7878
+        - containerPort: 6767
         env:
         - name: PUID
           value: {{ .Values.env.PUID | quote }}
@@ -58,11 +58,13 @@ spec:
           subPath: {{ .Values.persistence.media.subPath }}
           {{- end }}
         {{- end }}
+
+
       volumes:
       - name: config
         {{- if .Values.persistence.config.enabled }}
         persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-config
+          claimName: {{ include "bazarr.configPVCName" . }}
         {{- else }}
         emptyDir: {}
         {{- end }}
@@ -73,12 +75,12 @@ spec:
           claimName: {{ .Values.persistence.media.existingClaim }}
         {{- else }}
         persistentVolumeClaim:
-          claimName: {{ include "radarr.fullname" . }}-media
+          claimName: {{ include "bazarr.fullname" . }}-media
         {{- end }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
+            {{- with .Values.nodeSelector }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
+      {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
@@ -88,3 +90,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        
