@@ -1,0 +1,77 @@
+1. Get the qBittorrent WebUI URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.tls.enabled }}
+  https://{{ .Values.ingress.host }}
+{{- else }}
+  http://{{ .Values.ingress.host }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.webui.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "qbittorrent.fullname" . }}-webui)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.webui.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "qbittorrent.fullname" . }}-webui'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "qbittorrent.fullname" . }}-webui --template "{{ "{{" }} range (index .status.loadBalancer.ingress 0) {{ "}}" }}{{ "{{" }}.{{ "}}" }}{{ "{{" }} end {{ "}}" }}")
+  echo http://$SERVICE_IP:{{ .Values.service.webui.port }}
+{{- else if contains "ClusterIP" .Values.service.webui.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ include "qbittorrent.name" . }},instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:{{ .Values.env.QBITTORRENT_PORT }} to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME {{ .Values.env.QBITTORRENT_PORT }}:{{ .Values.env.QBITTORRENT_PORT }}
+{{- end }}
+
+2. Initial login credentials:
+   - Username: {{ .Values.env.QBITTORRENT_USERNAME }}
+{{- if .Values.env.QBITTORRENT_PASSWORD }}
+   - Password: [Set in values.yaml]
+{{- else }}
+   - Password: Check container logs for generated password
+{{- end }}
+   - Check the logs with: kubectl logs {{ include "qbittorrent.fullname" . }}-<pod-suffix> -c qbittorrent
+   - You MUST change the default username/password in the WebUI settings
+
+3. NordVPN Configuration:
+   ✅ NordVPN is INTEGRATED into the container
+   - Country: {{ .Values.nordvpn.country }}
+   - Group: {{ .Values.nordvpn.group }}
+   - Protocol: {{ .Values.nordvpn.protocol }}
+   - All qBittorrent traffic is routed through NordVPN
+   - Check VPN status: kubectl logs {{ include "qbittorrent.fullname" . }}-<pod-suffix>
+
+4. Service configuration:
+   - WebUI Service: {{ .Values.service.webui.enabled | ternary "Enabled" "Disabled" }} ({{ .Values.service.webui.type }})
+   - Torrenting Service: {{ .Values.service.torrenting.enabled | ternary "Enabled" "Disabled" }} ({{ .Values.service.torrenting.type }})
+
+5. Port configuration:
+   - WebUI Port: {{ .Values.env.QBITTORRENT_PORT }}
+   - Torrenting Port: 6881 (TCP/UDP) - managed by NordVPN
+
+{{- if .Values.persistence.downloads.enabled }}
+
+6. Your downloads volume is mounted at: /downloads
+{{- else }}
+
+6. Note: Downloads volume is not enabled
+   Enable it in values.yaml to persist your downloads:
+   persistence:
+     downloads:
+       enabled: true
+       size: 100Gi
+{{- end }}
+
+7. Important Security Notes:
+   ✅ All traffic is protected by NordVPN
+   ✅ Kill switch is automatically enabled
+   ✅ DNS queries are secured
+   - Change the default password immediately after first login
+   - Monitor logs for any connection issues
+
+8. Troubleshooting NordVPN:
+   - Check VPN connection: kubectl logs <pod-name>
+   - Restart if needed: kubectl delete pod <pod-name>
+   - Verify IP: kubectl exec <pod-name> -- curl ifconfig.me
+
+For more information visit: 
+- qBittorrent: https://github.com/qbittorrent/qBittorrent/wiki
+- qBittorrent-nox Static: https://github.com/userdocs/qbittorrent-nox-static
+- NordVPN: https://nordvpn.com/

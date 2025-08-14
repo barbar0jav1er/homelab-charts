@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qbittorrent.fullname" . }}
+  labels:
+    {{- include "qbittorrent.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "qbittorrent.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "qbittorrent.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "qbittorrent.serviceAccountName" . }}
+      containers:
+      # Main qBittorrent + NordVPN Container
+      - name: qbittorrent
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+              - NET_RAW
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: webui
+          containerPort: {{ .Values.env.QBITTORRENT_PORT }}
+        - name: torrenting-tcp
+          containerPort: 6881
+          protocol: TCP
+        - name: torrenting-udp
+          containerPort: 6881
+          protocol: UDP
+        env:
+        - name: NORDVPN_TOKEN
+          {{- if .Values.nordvpn.credentialsSecret.name }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.nordvpn.credentialsSecret.name }}
+              key: {{ .Values.nordvpn.credentialsSecret.tokenKey }}
+          {{- else }}
+          value: {{ .Values.nordvpn.token | quote }}
+          {{- end }}
+        - name: NORDVPN_COUNTRY
+          value: {{ .Values.nordvpn.country | quote }}
+        - name: NORDVPN_GROUP
+          value: {{ .Values.nordvpn.group | quote }}
+        - name: NORDVPN_PROTOCOL
+          value: {{ .Values.nordvpn.protocol | quote }}
+        - name: QBITTORRENT_PORT
+          value: {{ .Values.env.QBITTORRENT_PORT | quote }}
+        - name: QBITTORRENT_USERNAME
+          value: {{ .Values.env.QBITTORRENT_USERNAME | quote }}
+        {{- if .Values.env.QBITTORRENT_PASSWORD }}
+        - name: QBITTORRENT_PASSWORD
+          value: {{ .Values.env.QBITTORRENT_PASSWORD | quote }}
+        {{- end }}
+        - name: TZ
+          value: {{ .Values.env.TZ | quote }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.env.QBITTORRENT_PORT }}
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.env.QBITTORRENT_PORT }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        {{- if .Values.persistence.downloads.enabled }}
+        - name: downloads
+          mountPath: /downloads
+          {{- if .Values.persistence.downloads.subPath }}
+          subPath: {{ .Values.persistence.downloads.subPath }}
+          {{- end }}
+        {{- end }}
+      volumes:
+      - name: config
+        {{- if .Values.persistence.config.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "qbittorrent.configPVCName" . }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      {{- if .Values.persistence.downloads.enabled }}
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: {{ include "qbittorrent.downloadsPVCName" . }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

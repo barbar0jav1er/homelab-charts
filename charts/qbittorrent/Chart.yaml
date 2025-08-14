@@ -1,0 +1,30 @@
+apiVersion: v2
+name: qbittorrent
+description: A Helm chart for qBittorrent with integrated NordVPN for secure torrenting
+type: application
+version: 0.2.0
+appVersion: "5.1.2"
+
+keywords:
+  - qbittorrent
+  - torrent
+  - bittorrent
+  - download
+  - client
+  - vpn
+  - nordvpn
+  - privacy
+  - security
+
+maintainers:
+  - name: Barbaro Javier
+    email: barbar0jav1er@callbackhell.run
+
+home: https://github.com/qbittorrent/qBittorrent
+sources:
+  - https://github.com/qbittorrent/qBittorrent
+  - https://github.com/userdocs/qbittorrent-nox-static
+
+annotations:
+  category: Media
+  licenses: GPL-2.0-or-later

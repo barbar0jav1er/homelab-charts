@@ -1,0 +1,44 @@
+{{- if .Values.service.webui.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qbittorrent.fullname" . }}-webui
+  labels:
+    {{- include "qbittorrent.labels" . | nindent 4 }}
+    component: webui
+spec:
+  type: {{ .Values.service.webui.type }}
+  ports:
+    - port: {{ .Values.service.webui.port }}
+      targetPort: webui
+      protocol: TCP
+      name: webui
+  selector:
+    {{- include "qbittorrent.labels" . | nindent 4 }}
+{{- end }}
+---
+{{- if .Values.service.torrenting.enabled }}
+# Torrenting service for qBittorrent + NordVPN
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qbittorrent.fullname" . }}-torrenting
+  labels:
+    {{- include "qbittorrent.labels" . | nindent 4 }}
+    component: torrenting
+  annotations:
+    service.kubernetes.io/topology-aware-hints: auto
+spec:
+  type: {{ .Values.service.torrenting.type }}
+  ports:
+    - port: {{ .Values.service.torrenting.port }}
+      targetPort: torrenting-tcp
+      protocol: TCP
+      name: torrenting-tcp
+    - port: {{ .Values.service.torrenting.port }}
+      targetPort: torrenting-udp
+      protocol: UDP
+      name: torrenting-udp
+  selector:
+    {{- include "qbittorrent.labels" . | nindent 4 }}
+{{- end }}

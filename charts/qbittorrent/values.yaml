@@ -1,0 +1,114 @@
+# Default values for qbittorrent
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/barbar0jav1er/qbittorrent-nordvpn-docker
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+
+  TZ: "UTC"
+  QBITTORRENT_PORT: "8080"
+  QBITTORRENT_USERNAME: "admin"
+  QBITTORRENT_PASSWORD: ""
+
+# NordVPN Configuration
+nordvpn:
+  # NordVPN token (get from: https://my.nordaccount.com/dashboard/nordvpn/)
+  token: ""
+  
+  # Server Selection
+  country: "US"
+  group: "P2P"
+  protocol: "udp"
+  
+  # Alternatively, use an existing secret
+  credentialsSecret:
+    name: ""
+    tokenKey: "nordvpn-token"
+
+service:
+  webui:
+    enabled: true
+    type: ClusterIP
+    port: 8080
+  torrenting:
+    enabled: true
+    type: LoadBalancer
+    port: 6881
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/auth-type: basic
+    # nginx.ingress.kubernetes.io/auth-secret: basic-auth
+  host: qbittorrent.local
+  tls:
+    enabled: false
+    secretName: qbittorrent-tls
+
+persistence:
+  config:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+    existingClaim: ""  # Use existing PVC instead of creating a new one
+    
+  downloads:
+    enabled: false
+    size: 100Gi
+    storageClass: ""
+    existingClaim: ""  # Use existing PVC instead of creating a new one
+    subPath: ""        # Subpath within the PVC (e.g., "downloads")
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+podSecurityContext: {}
+  # fsGroup: 1000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
