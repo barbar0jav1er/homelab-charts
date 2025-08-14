@@ -24,6 +24,58 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/actual-server-0.2.0/actual-server-0.2.0.tgz
     version: 0.2.0
+  bazarr:
+  - apiVersion: v2
+    appVersion: 05.07.25
+    created: "2025-08-14T18:11:46.023260444Z"
+    description: A Helm chart for Bazarr subtitle management application
+    digest: 34e859fb88c6e11c6f813a20908adcc090c63337e954e3e508f8f4665f983132
+    keywords:
+    - bazarr
+    - subtitles
+    - sonarr
+    - radarr
+    - media
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: bazarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/bazarr-0.1.0/bazarr-0.1.0.tgz
+    version: 0.1.0
+  flaresolverr:
+  - annotations:
+      category: Networking
+      licenses: MIT
+    apiVersion: v2
+    appVersion: latest
+    created: "2025-08-14T18:11:46.200812645Z"
+    description: A Helm chart for FlareSolverr - proxy server to bypass Cloudflare
+      protection for *arr applications
+    digest: beff0db4c081b0fdaee2bd0e348f72c311368283d7640208a7809cb3fbef2177
+    home: https://github.com/FlareSolverr/FlareSolverr
+    keywords:
+    - flaresolverr
+    - cloudflare
+    - proxy
+    - indexer
+    - arr
+    - sonarr
+    - radarr
+    - prowlarr
+    - anti-bot
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: flaresolverr
+    sources:
+    - https://github.com/FlareSolverr/FlareSolverr
+    - https://github.com/flaresolverr/flaresolverr-docker
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/flaresolverr-1.0.0/flaresolverr-1.0.0.tgz
+    version: 1.0.0
   pihole:
   - apiVersion: v2
     appVersion: 2025.08.0
@@ -38,6 +90,28 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/pihole-0.1.1/pihole-0.1.1.tgz
     version: 0.1.1
+  prowlarr:
+  - apiVersion: v2
+    appVersion: 1.37.0
+    created: "2025-08-14T18:11:46.368078177Z"
+    description: A Helm chart for Prowlarr indexer manager for arr applications
+    digest: 9f2acaa46e329a7954699589a9ed790a9419572aa87a4b4dcd1e6187dbe91cd2
+    keywords:
+    - prowlarr
+    - indexer
+    - manager
+    - sonarr
+    - radarr
+    - arr
+    - proxy
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: prowlarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/prowlarr-0.1.0/prowlarr-0.1.0.tgz
+    version: 0.1.0
   qbittorrent:
   - annotations:
       category: Media
@@ -72,6 +146,25 @@ entries:
   radarr:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-08-14T18:11:46.515822277Z"
+    description: A Helm chart for Radarr movie management application
+    digest: 5657160fa5f63502ca8a3cae7ab09fbcf7325461883cc8d692e315c227061287
+    keywords:
+    - radarr
+    - movies
+    - sonarr
+    - media
+    - downloads
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: radarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/radarr-0.2.0/radarr-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-08-12T18:46:51.9343688Z"
     description: A Helm chart for Radarr movie management application
     digest: 037921c6a8a39b9e172e2b1516a102e29194e6fa72891849f91d41889ef85524
@@ -89,4 +182,25 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/radarr-0.1.0/radarr-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-14T17:03:31.141239301Z"
+  sonarr:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-08-14T18:11:46.684370269Z"
+    description: A Helm chart for Sonarr TV series management application
+    digest: f1f9fc9fbaace5dbb678c6079402891e0e75cea344f8d36b2b05ef2f2f8705a8
+    keywords:
+    - sonarr
+    - tv
+    - series
+    - radarr
+    - media
+    - downloads
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: sonarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-08-14T18:11:46.684384907Z"
