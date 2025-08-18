@@ -240,6 +240,34 @@ entries:
       category: Media
       licenses: GPL-2.0-or-later
     apiVersion: v2
+    appVersion: latest
+    created: "2025-08-18T17:22:23.028015841Z"
+    description: A Helm chart for qBittorrent BitTorrent client using LinuxServer
+      image
+    digest: edac0e44094e70f746e5fbf81f6a78661207f52d7f735a872b8e936a9cac4158
+    home: https://github.com/qbittorrent/qBittorrent
+    keywords:
+    - qbittorrent
+    - torrent
+    - bittorrent
+    - download
+    - client
+    - linuxserver
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: qbittorrent
+    sources:
+    - https://github.com/qbittorrent/qBittorrent
+    - https://github.com/userdocs/qbittorrent-nox-static
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/qbittorrent-0.3.0/qbittorrent-0.3.0.tgz
+    version: 0.3.0
+  - annotations:
+      category: Media
+      licenses: GPL-2.0-or-later
+    apiVersion: v2
     appVersion: 5.1.2
     created: "2025-08-14T17:03:31.141228751Z"
     description: A Helm chart for qBittorrent with integrated NordVPN for secure torrenting
@@ -404,4 +432,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-18T16:47:45.076473873Z"
+generated: "2025-08-18T17:22:23.028060445Z"
