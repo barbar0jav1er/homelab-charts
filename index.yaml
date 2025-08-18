@@ -27,6 +27,25 @@ entries:
   bazarr:
   - apiVersion: v2
     appVersion: 05.07.25
+    created: "2025-08-18T16:47:44.565732754Z"
+    description: A Helm chart for Bazarr subtitle management application
+    digest: 431393035021db8da731490ae09bbad1a3f0a1a5f156e68d6d8dde67cc8f4e68
+    keywords:
+    - bazarr
+    - subtitles
+    - sonarr
+    - radarr
+    - media
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: bazarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/bazarr-0.1.2/bazarr-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 05.07.25
     created: "2025-08-18T16:31:04.771464747Z"
     description: A Helm chart for Bazarr subtitle management application
     digest: 031fb7415fe47b68c8187c56ad3b971df984a0e1bd8e4d48098cc83bcaf08954
@@ -155,6 +174,27 @@ entries:
   prowlarr:
   - apiVersion: v2
     appVersion: 1.37.0
+    created: "2025-08-18T16:47:44.779007487Z"
+    description: A Helm chart for Prowlarr indexer manager for arr applications
+    digest: eeffda91cc6cfc90a499d561ba6cb56f902bf254ff4c1f4410caf6ed6d3da1e4
+    keywords:
+    - prowlarr
+    - indexer
+    - manager
+    - sonarr
+    - radarr
+    - arr
+    - proxy
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: prowlarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/prowlarr-0.1.2/prowlarr-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.37.0
     created: "2025-08-18T16:31:05.117236351Z"
     description: A Helm chart for Prowlarr indexer manager for arr applications
     digest: fbb3ffb526b0dce29a14727791cb0fb8c120bf55e6053d7e46d6bcd97a3b057c
@@ -229,6 +269,25 @@ entries:
   radarr:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-08-18T16:47:44.920169302Z"
+    description: A Helm chart for Radarr movie management application
+    digest: 32e6287ee2825a53d696113c81b297946a7d69ae38112bb4cf629e6a0ad13bc0
+    keywords:
+    - radarr
+    - movies
+    - sonarr
+    - media
+    - downloads
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: radarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/radarr-0.2.2/radarr-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-08-18T16:31:05.272435085Z"
     description: A Helm chart for Radarr movie management application
     digest: a3f3570d5a19d1647ab62c46ba9d2695d80fd9888938398e7533332594800f4b
@@ -287,6 +346,26 @@ entries:
   sonarr:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-08-18T16:47:45.076428638Z"
+    description: A Helm chart for Sonarr TV series management application
+    digest: ba45688df1b4d063304b033780cbf3af4f7e0d93648dd457910b82631341c48f
+    keywords:
+    - sonarr
+    - tv
+    - series
+    - radarr
+    - media
+    - downloads
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: sonarr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/sonarr-0.1.2/sonarr-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-08-18T16:31:05.411394762Z"
     description: A Helm chart for Sonarr TV series management application
     digest: ac08ac047bca2b9e9e30259005a76d98af8ad569c60fac323ef8bab7838a885f
@@ -325,4 +404,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-18T16:31:05.411483971Z"
+generated: "2025-08-18T16:47:45.076473873Z"
