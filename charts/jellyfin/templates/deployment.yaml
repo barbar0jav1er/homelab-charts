@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jellyfin.fullname" . }}
+  labels:
+    {{- include "jellyfin.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jellyfin.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jellyfin.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "jellyfin.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+        {{- if include "jellyfin.hardwareAcceleration.needsDevices" . }}
+        supplementalGroups:
+          - {{ include "jellyfin.hardwareAcceleration.renderGroup" . }}
+        {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8096
+          protocol: TCP
+        env:
+        {{- if include "jellyfin.shouldSetPublishedServerUrl" . }}
+        - name: JELLYFIN_PublishedServerUrl
+          value: {{ include "jellyfin.publishedServerUrl" . | quote }}
+        {{- end }}
+        {{- with .Values.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.resources }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
+        {{- if .Values.healthChecks.liveness.enabled }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.healthChecks.liveness.httpGet.path }}
+            port: {{ .Values.healthChecks.liveness.httpGet.port }}
+          initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
+          failureThreshold: {{ .Values.healthChecks.liveness.failureThreshold }}
+          successThreshold: {{ .Values.healthChecks.liveness.successThreshold }}
+        {{- end }}
+        {{- if .Values.healthChecks.readiness.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.healthChecks.readiness.httpGet.path }}
+            port: {{ .Values.healthChecks.readiness.httpGet.port }}
+          initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
+          failureThreshold: {{ .Values.healthChecks.readiness.failureThreshold }}
+          successThreshold: {{ .Values.healthChecks.readiness.successThreshold }}
+        {{- end }}
+        {{- if .Values.healthChecks.startup.enabled }}
+        startupProbe:
+          httpGet:
+            path: {{ .Values.healthChecks.startup.httpGet.path }}
+            port: {{ .Values.healthChecks.startup.httpGet.port }}
+          initialDelaySeconds: {{ .Values.healthChecks.startup.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthChecks.startup.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthChecks.startup.timeoutSeconds }}
+          failureThreshold: {{ .Values.healthChecks.startup.failureThreshold }}
+          successThreshold: {{ .Values.healthChecks.startup.successThreshold }}
+        {{- end }}
+        volumeMounts:
+        {{- if .Values.persistence.config.enabled }}
+        - name: config
+          mountPath: /config
+        {{- end }}
+        {{- if .Values.persistence.cache.enabled }}
+        - name: cache
+          mountPath: /cache
+        {{- end }}
+        {{- if .Values.persistence.media.enabled }}
+        - name: media
+          mountPath: /media
+        {{- end }}
+        {{- if and (include "jellyfin.hardwareAcceleration.needsDevices" .) .Values.hardwareAcceleration.intel.enableDevices }}
+        - name: dri-devices
+          mountPath: /dev/dri
+        {{- end }}
+      volumes:
+      {{- if .Values.persistence.config.enabled }}
+      - name: config
+        persistentVolumeClaim:
+          claimName: {{ include "jellyfin.fullname" . }}-config
+      {{- end }}
+      {{- if .Values.persistence.cache.enabled }}
+      - name: cache
+        persistentVolumeClaim:
+          claimName: {{ include "jellyfin.fullname" . }}-cache
+      {{- end }}
+      {{- if .Values.persistence.media.enabled }}
+      - name: media
+        persistentVolumeClaim:
+          {{- if .Values.persistence.media.existingClaim }}
+          claimName: {{ .Values.persistence.media.existingClaim }}
+          {{- else }}
+          claimName: {{ include "jellyfin.fullname" . }}-media
+          {{- end }}
+      {{- end }}
+      {{- if and (include "jellyfin.hardwareAcceleration.needsDevices" .) .Values.hardwareAcceleration.intel.enableDevices }}
+      - name: dri-devices
+        hostPath:
+          path: /dev/dri
+      {{- end }}

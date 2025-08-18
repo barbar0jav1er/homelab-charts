@@ -1,0 +1,133 @@
+image:
+  repository: jellyfin/jellyfin
+  tag: "10.10.7"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8096
+
+ingress:
+  enabled: false
+  className: ""              # nginx, traefik, etc.
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # nginx.ingress.kubernetes.io/proxy-body-size: "0"  # Para uploads grandes
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+  
+  hosts:
+    - host: jellyfin.local
+      paths:
+        - path: /
+          pathType: Prefix
+  
+  tls: []
+    # - secretName: jellyfin-tls
+    #   hosts:
+    #     - jellyfin.ejemplo.com
+
+persistence:
+  config:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+  
+  cache:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 5Gi
+  
+  media:
+    enabled: false
+    storageClass: ""
+    accessMode: ReadWriteMany
+    size: 100Gi
+    existingClaim: ""
+
+env:
+  JELLYFIN_PublishedServerUrl: ""
+  
+extraEnv: []
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
+
+resources:
+  limits:
+    cpu: 2000m      
+    memory: 4Gi     
+  requests:
+    cpu: 500m       
+    memory: 1Gi
+
+
+hardwareAcceleration:
+  enabled: false  
+  type: ""  # intel, nvidia, amd
+  
+  # Intel GPUs Coinfiguratins (recommended)
+  intel:
+    enableDevices: true
+    renderGroup: 109
+    
+  # NVIDIA GPUs
+  nvidia:
+    runtime: true
+    visibleDevices: "all"
+    
+  # AMD GPUs (not recommended for Jellyfin)
+  amd:
+    enableDevices: true
+    renderGroup: 109
+
+
+healthChecks:
+  liveness:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  
+
+  readiness:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+  
+  startup:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
+    successThreshold: 1
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}

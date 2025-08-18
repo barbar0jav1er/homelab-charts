@@ -1,0 +1,76 @@
+1. Jellyfin has been deployed successfully! 🎉
+
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+2. You can access Jellyfin at:
+   {{- if $.Values.ingress.tls }}
+   🌐 https://{{ $host.host }}
+   {{- else }}
+   🌐 http://{{ $host.host }}
+   {{- end }}
+{{- end }}
+
+{{- else if contains "NodePort" .Values.service.type }}
+2. Get the application URL by running these commands:
+   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "jellyfin.fullname" . }})
+   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+   echo http://$NODE_IP:$NODE_PORT
+
+{{- else if contains "LoadBalancer" .Values.service.type }}
+2. Get the application URL by running these commands:
+   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "jellyfin.fullname" . }}'
+   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "jellyfin.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+   echo http://$SERVICE_IP:{{ .Values.service.port }}
+
+{{- else if contains "ClusterIP" .Values.service.type }}
+2. To access Jellyfin from outside the cluster:
+   kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "jellyfin.fullname" . }} 8096:{{ .Values.service.port }}
+   Then open: http://127.0.0.1:8096
+
+{{- end }}
+
+3. Initial Setup:
+   📋 Complete the setup wizard in your browser
+   👤 Create your admin user account
+   📁 Configure your media libraries
+
+4. Storage Status:
+   {{- if .Values.persistence.config.enabled }}
+   ✅ Config storage: {{ .Values.persistence.config.size }} (persistent)
+   {{- else }}
+   ⚠️  Config storage: ephemeral (will be lost on restart!)
+   {{- end }}
+   {{- if .Values.persistence.cache.enabled }}
+   ✅ Cache storage: {{ .Values.persistence.cache.size }} (persistent)
+   {{- else }}
+   ⚠️  Cache storage: ephemeral
+   {{- end }}
+   {{- if .Values.persistence.media.enabled }}
+   {{- if .Values.persistence.media.existingClaim }}
+   ✅ Media storage: using existing PVC "{{ .Values.persistence.media.existingClaim }}"
+   {{- else }}
+   ✅ Media storage: {{ .Values.persistence.media.size }} (new PVC)
+   {{- end }}
+   {{- else }}
+   ⚠️  Media storage: not configured - you'll need to add media libraries manually
+   {{- end }}
+
+5. Useful Commands:
+   📊 Check pod status: kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+   📝 View logs: kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+   🔍 Describe pod: kubectl describe pod -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+{{- if not .Values.persistence.config.enabled }}
+
+⚠️  WARNING: Config persistence is disabled!
+   Your Jellyfin configuration will be lost when the pod restarts.
+   Enable persistence.config.enabled: true for production use.
+{{- end }}
+
+{{- if and .Values.ingress.enabled (include "jellyfin.publishedServerUrl" .) }}
+
+6. Autodiscovery is configured with: {{ include "jellyfin.publishedServerUrl" . }}
+{{- end }}
+
+Happy streaming! 🍿�

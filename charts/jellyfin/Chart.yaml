@@ -1,0 +1,16 @@
+apiVersion: v2
+name: jellyfin
+description: A Helm chart for Jellyfin Media Server
+type: application
+version: 0.1.0
+appVersion: "10.10.7"
+keywords:
+  - jellyfin
+  - media
+  - streaming
+home: https://jellyfin.org/
+sources:
+  - https://github.com/jellyfin/jellyfin
+maintainers:
+  - name: Barbaro Javier
+    email: barbar0jav1er@callbackhell.run
