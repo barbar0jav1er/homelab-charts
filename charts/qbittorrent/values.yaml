@@ -6,31 +6,16 @@ fullnameOverride: ""
 replicaCount: 1
 
 image:
-  repository: ghcr.io/barbar0jav1er/qbittorrent-nordvpn-docker
+  repository: lscr.io/linuxserver/qbittorrent
   tag: latest
   pullPolicy: IfNotPresent
 
 env:
-
+  # LinuxServer qBittorrent environment variables
+  PUID: "1000"
+  PGID: "1000"
   TZ: "UTC"
-  QBITTORRENT_PORT: "8080"
-  QBITTORRENT_USERNAME: "admin"
-  QBITTORRENT_PASSWORD: ""
-
-# NordVPN Configuration
-nordvpn:
-  # NordVPN token (get from: https://my.nordaccount.com/dashboard/nordvpn/)
-  token: ""
-  
-  # Server Selection
-  country: "US"
-  group: "P2P"
-  protocol: "udp"
-  
-  # Alternatively, use an existing secret
-  credentialsSecret:
-    name: ""
-    tokenKey: "nordvpn-token"
+  WEBUI_PORT: "8080"
 
 service:
   webui:

@@ -20,18 +20,13 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "qbittorrent.serviceAccountName" . }}
       containers:
-      # Main qBittorrent + NordVPN Container
+      # Main qBittorrent Container
       - name: qbittorrent
-        securityContext:
-          capabilities:
-            add:
-              - NET_ADMIN
-              - NET_RAW
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - name: webui
-          containerPort: {{ .Values.env.QBITTORRENT_PORT }}
+          containerPort: {{ .Values.env.WEBUI_PORT }}
         - name: torrenting-tcp
           containerPort: 6881
           protocol: TCP
@@ -39,31 +34,10 @@ spec:
           containerPort: 6881
           protocol: UDP
         env:
-        - name: NORDVPN_TOKEN
-          {{- if .Values.nordvpn.credentialsSecret.name }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.nordvpn.credentialsSecret.name }}
-              key: {{ .Values.nordvpn.credentialsSecret.tokenKey }}
-          {{- else }}
-          value: {{ .Values.nordvpn.token | quote }}
-          {{- end }}
-        - name: NORDVPN_COUNTRY
-          value: {{ .Values.nordvpn.country | quote }}
-        - name: NORDVPN_GROUP
-          value: {{ .Values.nordvpn.group | quote }}
-        - name: NORDVPN_PROTOCOL
-          value: {{ .Values.nordvpn.protocol | quote }}
-        - name: QBITTORRENT_PORT
-          value: {{ .Values.env.QBITTORRENT_PORT | quote }}
-        - name: QBITTORRENT_USERNAME
-          value: {{ .Values.env.QBITTORRENT_USERNAME | quote }}
-        {{- if .Values.env.QBITTORRENT_PASSWORD }}
-        - name: QBITTORRENT_PASSWORD
-          value: {{ .Values.env.QBITTORRENT_PASSWORD | quote }}
+        {{- range $key, $value := .Values.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
         {{- end }}
-        - name: TZ
-          value: {{ .Values.env.TZ | quote }}
         {{- with .Values.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -71,7 +45,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: {{ .Values.env.QBITTORRENT_PORT }}
+            port: {{ .Values.env.WEBUI_PORT }}
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 5
@@ -79,7 +53,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /
-            port: {{ .Values.env.QBITTORRENT_PORT }}
+            port: {{ .Values.env.WEBUI_PORT }}
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5

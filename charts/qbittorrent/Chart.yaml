@@ -1,9 +1,9 @@
 apiVersion: v2
 name: qbittorrent
-description: A Helm chart for qBittorrent with integrated NordVPN for secure torrenting
+description: A Helm chart for qBittorrent BitTorrent client using LinuxServer image
 type: application
-version: 0.2.0
-appVersion: "5.1.2"
+version: 0.3.0
+appVersion: "latest"
 
 keywords:
   - qbittorrent
@@ -11,10 +11,7 @@ keywords:
   - bittorrent
   - download
   - client
-  - vpn
-  - nordvpn
-  - privacy
-  - security
+  - linuxserver
 
 maintainers:
   - name: Barbaro Javier

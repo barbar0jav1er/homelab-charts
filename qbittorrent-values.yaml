@@ -1,0 +1,85 @@
+# qBittorrent Values for Testing
+# BitTorrent client using LinuxServer image
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: lscr.io/linuxserver/qbittorrent
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+  # LinuxServer qBittorrent environment variables
+  PUID: "1000"
+  PGID: "1000"
+  TZ: "America/Havana"
+  WEBUI_PORT: "8080"
+
+service:
+  webui:
+    enabled: true
+    type: ClusterIP
+    port: 8080
+  torrenting:
+    enabled: true
+    type: LoadBalancer
+    port: 6881
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    traefik.ingress.kubernetes.io/router.entrypoints: "web,websecure"
+  host: qbittorrent.dev.cubancodelab.net
+  path: /
+  tls:
+    enabled: false
+    secretName: qbittorrent-tls
+
+persistence:
+  config:
+    enabled: true
+    storageClass: "nfs-ssd-fast"
+    accessMode: ReadWriteOnce
+    size: 5Gi
+
+  downloads:
+    enabled: true
+    storageClass: "nfs-ssd-fast"
+    accessMode: ReadWriteOnce
+    size: 100Gi
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+podAnnotations: {}
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
