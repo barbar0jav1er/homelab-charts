@@ -76,6 +76,27 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/flaresolverr-1.0.0/flaresolverr-1.0.0.tgz
     version: 1.0.0
+  jellyfin:
+  - apiVersion: v2
+    appVersion: 10.10.7
+    created: "2025-08-18T15:51:54.200483763Z"
+    description: A Helm chart for Jellyfin Media Server
+    digest: fc85abb6a1be3f8ec13d7c2ed135f0c36cc026200b0302963ccd67bff46535bf
+    home: https://jellyfin.org/
+    keywords:
+    - jellyfin
+    - media
+    - streaming
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: jellyfin
+    sources:
+    - https://github.com/jellyfin/jellyfin
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/jellyfin-0.1.0/jellyfin-0.1.0.tgz
+    version: 0.1.0
   pihole:
   - apiVersion: v2
     appVersion: 2025.08.0
@@ -203,4 +224,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-14T18:11:46.684384907Z"
+generated: "2025-08-18T15:51:54.200500995Z"
