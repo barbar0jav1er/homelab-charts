@@ -2,7 +2,7 @@ apiVersion: v2
 name: prowlarr
 description: A Helm chart for Prowlarr indexer manager for arr applications
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "1.37.0"
 
 keywords:

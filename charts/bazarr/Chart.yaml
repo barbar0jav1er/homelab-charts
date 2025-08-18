@@ -2,7 +2,7 @@ apiVersion: v2
 name: bazarr
 description: A Helm chart for Bazarr subtitle management application
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "05.07.25"
 
 keywords:
