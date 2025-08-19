@@ -236,6 +236,27 @@ entries:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/prowlarr-0.1.0/prowlarr-0.1.0.tgz
     version: 0.1.0
   qbittorrent:
+  - apiVersion: v2
+    appVersion: 5.1.0
+    created: "2025-08-19T15:16:57.350095953Z"
+    description: qBittorrent with Gluetun VPN sidecar for Kubernetes
+    digest: 6eb2f68e44095b98fe4ee42412d51019ce43e704b6413ab172cde4a7f100a218
+    keywords:
+    - qbittorrent
+    - vpn
+    - gluetun
+    - torrent
+    maintainers:
+    - email: barbar0jav1er@callbackhell.run
+      name: Barbaro Javier
+    name: qbittorrent
+    sources:
+    - https://github.com/linuxserver/docker-qbittorrent
+    - https://github.com/qdm12/gluetun
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/qbittorrent-0.4.0/qbittorrent-0.4.0.tgz
+    version: 0.4.0
   - annotations:
       category: Media
       licenses: GPL-2.0-or-later
@@ -432,4 +453,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-18T17:22:23.028060445Z"
+generated: "2025-08-19T15:16:57.350129926Z"
