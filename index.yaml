@@ -138,6 +138,27 @@ entries:
   jellyseerr:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-08-19T16:04:18.829627007Z"
+    description: A Helm chart for Jellyseerr - media request and discovery tool
+    digest: 4c357ceb452aba34d1b8c6e4cfd7182bb06778fb4840f6d80b296e08dcfe9ed7
+    home: https://github.com/Fallenbagel/jellyseerr
+    keywords:
+    - media
+    - jellyfin
+    - plex
+    - requests
+    - discovery
+    maintainers:
+    - name: homelab-charts
+    name: jellyseerr
+    sources:
+    - https://github.com/Fallenbagel/jellyseerr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/jellyseerr-0.1.1/jellyseerr-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-08-18T16:31:04.995267697Z"
     description: A Helm chart for Jellyseerr - media request and discovery tool
     digest: 78e2afbfe47d72497b51b7695ee7042733597973ae5097e5b569500c90ffbd01
@@ -474,4 +495,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-19T15:30:15.517836053Z"
+generated: "2025-08-19T16:04:18.829667804Z"
