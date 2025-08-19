@@ -1,4 +1,4 @@
-{{- if .Values.persistence.config.enabled }}
+{{- if and .Values.persistence.config.enabled (not .Values.persistence.config.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -7,7 +7,7 @@ metadata:
     {{- include "jellyseerr.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - {{ .Values.persistence.config.accessMode }}
+    - ReadWriteOnce
   {{- if .Values.persistence.config.storageClass }}
   storageClassName: {{ .Values.persistence.config.storageClass }}
   {{- end }}

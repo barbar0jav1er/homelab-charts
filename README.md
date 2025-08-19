@@ -22,7 +22,7 @@ helm repo update
 | **bazarr** | Subtitle management for TV shows and movies, companion to Sonarr/Radarr | 0.1.2 | latest |
 | **flaresolverr** | Cloudflare bypass proxy for indexers with headless browser automation | 0.1.0 | latest |
 | **jellyfin** | Media server for organizing and streaming your media library | 0.1.0 | 10.10.7 |
-| **jellyseerr** | Media request and discovery tool for Jellyfin and Plex servers | 0.1.0 | latest |
+| **jellyseerr** | Media request and discovery tool for Jellyfin and Plex servers | 0.1.1 | latest |
 | **pihole** | Network-wide DNS ad-blocker with DNSCrypt-proxy integration | Latest | 2025.08.0 |
 | **prowlarr** | Centralized indexer manager for all *arr applications | 0.1.2 | latest |
 | **qbittorrent** | qBittorrent with Gluetun VPN sidecar for secure torrenting | 0.4.1 | 5.1.0 |

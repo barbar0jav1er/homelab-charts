@@ -28,50 +28,31 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.env.PORT }}
+              containerPort: 5055
               protocol: TCP
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- with .Values.extraEnv }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
           volumeMounts:
             - name: config
               mountPath: /app/config
-          {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.healthChecks.liveness.enabled }}
           livenessProbe:
-            {{- with .Values.healthChecks.liveness }}
-            {{- omit . "enabled" | toYaml | nindent 12 }}
-            {{- end }}
-          {{- end }}
-          {{- if .Values.healthChecks.readiness.enabled }}
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            {{- with .Values.healthChecks.readiness }}
-            {{- omit . "enabled" | toYaml | nindent 12 }}
-            {{- end }}
-          {{- end }}
-          {{- if .Values.healthChecks.startup.enabled }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           startupProbe:
-            {{- with .Values.healthChecks.startup }}
-            {{- omit . "enabled" | toYaml | nindent 12 }}
-            {{- end }}
-          {{- end }}
+            {{- toYaml .Values.startupProbe | nindent 12 }}
       volumes:
         - name: config
           {{- if .Values.persistence.config.enabled }}
           persistentVolumeClaim:
-            claimName: {{ include "jellyseerr.fullname" . }}-config
+            claimName: {{ .Values.persistence.config.existingClaim | default (printf "%s-config" (include "jellyseerr.fullname" .)) }}
           {{- else }}
           emptyDir: {}
           {{- end }}

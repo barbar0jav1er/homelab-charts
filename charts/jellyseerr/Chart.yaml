@@ -2,7 +2,7 @@ apiVersion: v2
 name: jellyseerr
 description: A Helm chart for Jellyseerr - media request and discovery tool
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "latest"
 home: https://github.com/Fallenbagel/jellyseerr
 sources:
