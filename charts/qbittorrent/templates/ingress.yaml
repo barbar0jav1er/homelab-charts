@@ -1,10 +1,10 @@
-{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "qbittorrent.fullname" . }}
+  name: {{ include "qbittorrent-vpn.fullname" . }}
   labels:
-    {{- include "qbittorrent.labels" . | nindent 4 }}
+    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -13,21 +13,31 @@ spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
-  rules:
-  - host: {{ .Values.ingress.host | quote }}
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ include "qbittorrent.fullname" . }}-webui
-            port:
-              number: {{ .Values.service.webui.port }}
-  {{- if .Values.ingress.tls.enabled }}
+  {{- if .Values.ingress.tls }}
   tls:
-  - hosts: 
-    - {{ .Values.ingress.host | quote }}
-    secretName: {{ .Values.ingress.tls.secretName }}
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- if .secretName }}
+      secretName: {{ .secretName }}
+      {{- end }}
+    {{- end }}
   {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "qbittorrent-vpn.fullname" $ }}
+                port:
+                  number: {{ $.Values.service.port }}
+          {{- end }}
+    {{- end }}
 {{- end }}

@@ -1,99 +1,252 @@
-# Default values for qbittorrent
+# Global Chart Settings
+# Override the default names for the chart resources
+nameOverride: ""              # Override the chart name (use chart name if empty)
+fullnameOverride: ""          # Override the full resource names (use generated name if empty)
 
-nameOverride: ""
-fullnameOverride: ""
+# Deployment Configuration
+replicaCount: 1               # Number of pod replicas to run
+revisionHistoryLimit: 3       # Number of old ReplicaSets to keep for rollback
 
-replicaCount: 1
+# Pod Security Context
+# Security settings that apply to all containers in the pod
+podSecurityContext:
+  runAsNonRoot: false         # Allow running as root (required for VPN functionality)
+  runAsUser: 0                # Run all containers as root user (UID 0)
+  fsGroup: 0                  # Use root group for shared volumes
 
-image:
-  repository: lscr.io/linuxserver/qbittorrent
-  tag: latest
-  pullPolicy: IfNotPresent
+# qBittorrent Container Configuration
+qbittorrent:
+  # Docker image settings for qBittorrent
+  image:
+    repository: linuxserver/qbittorrent  # Docker image repository
+    tag: 5.1.0                          # Image tag/version to use
+    pullPolicy: IfNotPresent            # When to pull the image (Always|IfNotPresent|Never)
+  
+  # Security context specific to qBittorrent container
+  securityContext: {}
 
-env:
-  # LinuxServer qBittorrent environment variables
-  PUID: "1000"
-  PGID: "1000"
-  TZ: "UTC"
-  WEBUI_PORT: "8080"
+  # BitTorrent traffic port (used by the torrent protocol)
+  bittorrentPort: 6881
 
-service:
-  webui:
-    enabled: true
-    type: ClusterIP
-    port: 8080
-  torrenting:
-    enabled: true
-    type: LoadBalancer
-    port: 6881
+  # Environment variables for qBittorrent container
+  env:
+    - name: PUID
+      value: "0"                # Process User ID (0 = root)
+    - name: PGID
+      value: "0"                # Process Group ID (0 = root)
+    - name: TZ
+      value: "UTC"              # Timezone for the container
+    - name: WEBUI_PORT
+      value: "8080"             # Port for qBittorrent web interface
+  
+  # Additional environment variables (empty by default)
+  extraEnv: []
+  
+  # Service configuration for qBittorrent
+  service:
+    port: 8080                  # Port to expose qBittorrent web interface
 
-ingress:
-  enabled: true
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-    # nginx.ingress.kubernetes.io/auth-type: basic
-    # nginx.ingress.kubernetes.io/auth-secret: basic-auth
-  host: qbittorrent.local
-  tls:
-    enabled: false
-    secretName: qbittorrent-tls
+  # Resource limits and requests for qBittorrent container
+  # Uncomment and adjust as needed for your cluster
+  #resources:
+  #  limits:
+  #    cpu: 1000m              # Maximum CPU (1 core)
+  #    memory: 2Gi             # Maximum memory
+  #  requests:
+  #    cpu: 200m               # Requested CPU
+  #    memory: 512Mi           # Requested memory
 
-persistence:
-  config:
-    enabled: true
-    size: 1Gi
-    storageClass: ""
-    existingClaim: ""  # Use existing PVC instead of creating a new one
+  # Persistent storage configuration
+  persistence:
+    # Configuration storage (qBittorrent settings, logs, etc.)
+    config:
+      enabled: true             # Enable persistent config storage
+      existingClaim: ""         # Use existing PVC (leave empty to create new)
+      storageClass: ""          # Storage class (use cluster default if empty)
+      accessMode: ReadWriteOnce # Volume access mode
+      size: 2Gi                 # Size of config volume
+      mountPath: /config        # Mount path in container
     
-  downloads:
-    enabled: false
-    size: 100Gi
-    storageClass: ""
-    existingClaim: ""  # Use existing PVC instead of creating a new one
-    subPath: ""        # Subpath within the PVC (e.g., "downloads")
+    # Downloads storage (torrents, completed downloads)
+    downloads:
+      enabled: true             # Enable persistent downloads storage
+      existingClaim: ""         # Use existing PVC (leave empty to create new)
+      storageClass: ""          # Storage class (use cluster default if empty)
+      accessMode: ReadWriteOnce # Volume access mode
+      size: 2Gi                 # Size of downloads volume
+      mountPath: /downloads     # Mount path in container
 
-resources: {}
-  # limits:
-  #   cpu: 500m
-  #   memory: 512Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  # Additional volume mounts for qBittorrent container
+  extraVolumeMounts: []
+  
+  # Additional volumes for qBittorrent container
+  extraVolumes: []
 
-livenessProbe:
-  enabled: true
-  initialDelaySeconds: 60
-  periodSeconds: 30
-  timeoutSeconds: 5
-  failureThreshold: 3
+# Health Check Probes for qBittorrent
+probes:
+  # Liveness probe - restarts container if failing
+  liveness:
+    enabled: true               # Enable liveness probe
+    path: /                     # HTTP path to check
+    initialDelaySeconds: 0      # Delay before first probe (startup probe handles this)
+    periodSeconds: 30           # How often to perform probe
+    timeoutSeconds: 5           # Timeout for each probe
+    failureThreshold: 3         # Failures before restart
+    successThreshold: 1         # Successes to mark as healthy
+  
+  # Readiness probe - removes from service endpoints if failing
+  readiness:
+    enabled: true               # Enable readiness probe
+    path: /                     # HTTP path to check
+    initialDelaySeconds: 0      # Delay before first probe (startup probe handles this)
+    periodSeconds: 10           # How often to perform probe
+    timeoutSeconds: 5           # Timeout for each probe
+    failureThreshold: 3         # Failures before marking unready
+    successThreshold: 1         # Successes to mark as ready
 
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 3
+# Gluetun VPN Sidecar Container Configuration
+gluetun:
+  enabled: true                 # Enable Gluetun VPN sidecar container
+  
+  # Docker image settings for Gluetun
+  image:
+    repository: qmcgaw/gluetun  # Gluetun Docker image repository
+    tag: v3.40.0                # Image version
+    pullPolicy: IfNotPresent    # When to pull the image
+  
+  # Security context for Gluetun (requires elevated privileges for VPN)
+  securityContext:
+    privileged: true            # Run in privileged mode (required for VPN)
+    capabilities:
+      add:
+        - NET_ADMIN             # Network administration capability (required for VPN)
+  
+  # VPN provider and connection configuration
+  vpn:
+    # Supported providers: nordvpn, protonvpn, expressvpn, surfshark, mullvad, 
+    # ivpn, private internet access, windscribe, etc.
+    provider: "nordvpn"         # VPN service provider
+    
+    # VPN protocol type: openvpn or wireguard
+    type: "openvpn"             # VPN protocol to use
+    
+    # Server selection criteria (all comma-separated lists)
+    serverCountries: "Netherlands"  # Countries to connect to (e.g., "Netherlands,Germany,Sweden")
+    serverCities: ""            # Specific cities (optional, e.g., "Amsterdam,Frankfurt")
+    serverNames: ""             # Specific server names (optional, e.g., "nl1,nl2")
+    randomize: "true"           # Randomly select from available servers
+    
+    # OpenVPN specific configuration (only used when type is "openvpn")
+    openvpn:
+      OPENVPN_PROTOCOL: "udp"   # OpenVPN protocol: udp or tcp
+    
+    # WireGuard specific configuration (only used when type is "wireguard")
+    wireguard:
+      privateKey: ""            # WireGuard private key (stored in Secret if provided)
+      privateKeyExistingSecret: ""      # Reference existing secret for private key
+      privateKeyExistingSecretKey: ""   # Key name in existing secret
+      addresses: ""             # WireGuard addresses (e.g., "10.64.222.21/32")
+      endpointIP: ""            # Specific endpoint IP (optional)
+      endpointPort: ""          # Specific endpoint port (optional)
+      publicKey: ""             # Server public key (optional)
+  
+  # VPN authentication credentials
+  credentials:
+    create: true                # Create new secret for credentials (false to use existing)
+    
+    # VPN service credentials (for OpenVPN and most providers)
+    username: ""                # VPN service username
+    password: ""                # VPN service password
+    
+    # Alternative: reference an existing Kubernetes secret
+    existingSecret: ""          # Name of existing secret containing credentials
+    usernameKey: "username"     # Key name for username in existing secret
+    passwordKey: "password"     # Key name for password in existing secret
+  
+  # Gluetun configuration settings (converted to environment variables)
+  settings:
+    FIREWALL: "on"              # Enable built-in firewall
+    FIREWALL_OUTBOUND_SUBNETS: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"  # Allow local networks
+    DNS_ADDRESS: "1.1.1.1"     # DNS server to use through VPN
+    HEALTH_SERVER_PORT: "8000"  # Port for Gluetun health check server
+    
+    # Network configuration for Kubernetes ingress compatibility
+    SERVER_ALLOWLIST: "qbittorrent:8080"  # Allow access to qBittorrent container
+    FIREWALL_INPUT_PORTS: "8080"          # Allow incoming traffic on port 8080
+    FIREWALL_DEBUG: "on"                  # Enable firewall debugging logs
+    JOURNALD: "off"                       # Disable journald logging
+    
+    # Port forwarding through VPN (provider dependent)
+    VPN_PORT_FORWARDING: "off"  # Enable/disable VPN port forwarding
+  
+  # Additional environment variables for Gluetun
+  extraEnv:
+    - name: LOG_LEVEL
+      value: "info"             # Logging level: debug, info, warning, error
+  
+  # Additional ports to expose from Gluetun container
+  extraPorts: []
+  # Example:
+  # - name: custom-port
+  #   containerPort: 9999
+  #   protocol: TCP
+  
+  # Resource allocation for Gluetun container
+  resources:
+    limits:
+      cpu: 300m                 # Maximum CPU usage
+      memory: 256Mi             # Maximum memory usage
+    requests:
+      cpu: 100m                 # Requested CPU
+      memory: 128Mi             # Requested memory
+  
+  # Persistent storage for Gluetun (stores VPN configuration cache)
+  persistence:
+    enabled: true               # Enable persistent storage for Gluetun
+    useEmptyDir: false          # Use emptyDir instead of PVC (data lost on pod restart)
+    existingClaim: false        # Use existing PVC (false to create new)
+    storageClass: ""            # Storage class (use default if empty)
+    accessMode: ReadWriteOnce   # Volume access mode
+    size: 100Mi                 # Size of Gluetun config volume
+    
+  # Additional volume mounts for Gluetun container
+  extraVolumeMounts: []
+  
+  # Additional volumes for Gluetun container
+  extraVolumes: []
 
-podSecurityContext: {}
-  # fsGroup: 1000
+# Kubernetes Service Configuration
+service:
+  type: ClusterIP              # Service type (ClusterIP|NodePort|LoadBalancer)
+  port: 8080                   # Service port (maps to qBittorrent web interface)
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# Ingress Configuration (for external access)
+ingress:
+  enabled: false               # Enable ingress (set to true to expose externally)
+  className: ""                # Ingress class name (e.g., "nginx", "traefik")
+  annotations: []              # Ingress annotations (load balancer specific)
+  
+  # Host configuration for ingress
+  hosts:
+    - host: qbittorrent.example.com    # Domain name for qBittorrent
+      paths:
+        - path: /               # URL path
+          pathType: Prefix      # Path matching type (Prefix|Exact)
+  
+  # TLS/SSL configuration
+  tls:
+    - hosts:
+        - qbittorrent.example.com      # Domains to secure with TLS
 
-serviceAccount:
-  create: true
-  annotations: {}
-  name: ""
+# Pod Scheduling and Placement
+nodeSelector: {}               # Node selection constraints (key-value pairs)
+tolerations: []                # Pod tolerations for node taints
+affinity: {}                   # Pod affinity/anti-affinity rules
 
-nodeSelector: {}
+# Pod Annotations and Additional Configuration
+podAnnotations: {}             # Annotations to add to pods
+extraVolumes: []               # Additional volumes for the pod
 
-tolerations: []
-
-affinity: {}
+# Development and Debugging Options
+hostNetwork: false             # Use host network instead of pod network
+initContainers: []             # Additional init containers to run before main containers

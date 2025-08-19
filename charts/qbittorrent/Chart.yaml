@@ -1,27 +1,18 @@
 apiVersion: v2
 name: qbittorrent
-description: A Helm chart for qBittorrent BitTorrent client using LinuxServer image
+description: qBittorrent with Gluetun VPN sidecar for Kubernetes
 type: application
-version: 0.3.0
-appVersion: "latest"
-
-keywords:
-  - qbittorrent
-  - torrent
-  - bittorrent
-  - download
-  - client
-  - linuxserver
-
+version: 0.4.0
+appVersion: 5.1.0
 maintainers:
   - name: Barbaro Javier
     email: barbar0jav1er@callbackhell.run
-
-home: https://github.com/qbittorrent/qBittorrent
+keywords:
+  - qbittorrent
+  - vpn
+  - gluetun
+  - torrent
+  
 sources:
-  - https://github.com/qbittorrent/qBittorrent
-  - https://github.com/userdocs/qbittorrent-nox-static
-
-annotations:
-  category: Media
-  licenses: GPL-2.0-or-later
+  - https://github.com/linuxserver/docker-qbittorrent
+  - https://github.com/qdm12/gluetun

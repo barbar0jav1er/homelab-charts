@@ -1,379 +1,220 @@
-# qBittorrent Helm Chart
+# qBittorrent with Gluetun VPN
 
-A Helm chart for deploying qBittorrent on Kubernetes with optional VPN sidecar integration using Gluetun.
+A Helm chart for deploying qBittorrent with Gluetun VPN sidecar container on Kubernetes. This setup ensures all qBittorrent traffic is securely routed through a VPN connection.
 
-![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)
-![Type](https://img.shields.io/badge/type-application-informational.svg)
-![AppVersion](https://img.shields.io/badge/app%20version-5.1.2-informational.svg)
+## Features
 
-## ✨ Features
+- **= VPN Protection**: All torrent traffic routed through VPN using Gluetun sidecar
+- **< Multiple VPN Providers**: Support for NordVPN, ProtonVPN, ExpressVPN, Surfshark, Mullvad, and more
+- **=' Flexible Protocols**: Both OpenVPN and WireGuard support
+- **=� Built-in Firewall**: Gluetun firewall prevents traffic leaks
+- **=� Persistent Storage**: Separate volumes for config and downloads
+- **>z Health Checks**: Comprehensive liveness and readiness probes
+- **<� Easy Configuration**: Well-documented values with sensible defaults
 
-- 🔄 **qBittorrent**: Modern web-based BitTorrent client
-- 🔒 **VPN Sidecar**: Optional VPN integration using Gluetun (supports NordVPN, ExpressVPN, Surfshark, and many more)
-- 🛡️ **Kill Switch**: Automatic protection if VPN disconnects
-- 📦 **Persistent Storage**: For configuration and downloads
-- 🌐 **Ingress**: Support for external access with TLS
-- ⚡ **Multi-Protocol**: Support for both OpenVPN and Wireguard
+## Architecture
 
-## 🚀 Quick Start
+This chart deploys two containers in a single pod:
 
-### Basic Installation (without VPN)
+1. **Gluetun VPN Container**: Handles VPN connection and network routing
+2. **qBittorrent Container**: BitTorrent client using VPN network
+
+## Quick Start
+
+### Basic Installation
+
 ```bash
-helm repo add qbittorrent https://your-repo.com/charts
-helm install qbittorrent qbittorrent/qbittorrent
+# Add the repository
+helm repo add homelab-charts https://helms.cubancodelab.net
+
+# Install with NordVPN (requires credentials)
+helm install qbittorrent homelab-charts/qbittorrent \
+  --set gluetun.credentials.username="your-nordvpn-username" \
+  --set gluetun.credentials.password="your-nordvpn-password"
 ```
 
-### Installation with VPN (Recommended)
+### Advanced Installation
 
-#### Using OpenVPN with NordVPN
 ```bash
-helm install qbittorrent qbittorrent/qbittorrent \
-  --set vpn.enabled=true \
-  --set vpn.vpnType="openvpn" \
-  --set vpn.openvpnUser="your-nordvpn-service-username" \
-  --set vpn.openvpnPassword="your-nordvpn-service-password" \
-  --set vpn.serverCountries="Spain" \
-  --set persistence.downloads.enabled=true \
-  --set persistence.downloads.size="500Gi"
+# Install with custom configuration
+helm install qbittorrent homelab-charts/qbittorrent \
+  --set gluetun.vpn.provider="protonvpn" \
+  --set gluetun.vpn.type="wireguard" \
+  --set gluetun.vpn.serverCountries="Netherlands,Germany" \
+  --set qbittorrent.persistence.downloads.size="500Gi" \
+  --set ingress.enabled=true \
+  --set ingress.hosts[0].host="qbittorrent.example.com"
 ```
 
-#### Using Wireguard with NordVPN
-```bash
-helm install qbittorrent qbittorrent/qbittorrent \
-  --set vpn.enabled=true \
-  --set vpn.vpnType="wireguard" \
-  --set vpn.wireguardPrivateKey="your-wireguard-private-key" \
-  --set vpn.serverCountries="Spain" \
-  --set persistence.downloads.enabled=true \
-  --set persistence.downloads.size="500Gi"
-```
+## Configuration
 
-#### Using Shared PVC with SubPath
-```bash
-# Share downloads folder with other *arr applications
-helm install qbittorrent qbittorrent/qbittorrent \
-  --set vpn.enabled=true \
-  --set vpn.vpnType="openvpn" \
-  --set vpn.openvpnUser="your-service-username" \
-  --set vpn.openvpnPassword="your-service-password" \
-  --set persistence.downloads.enabled=true \
-  --set persistence.downloads.existingClaim="shared-media-pvc" \
-  --set persistence.downloads.subPath="downloads"
-```
+### VPN Providers
 
-## 📋 Prerequisites
+Supported VPN providers include:
 
-- Kubernetes 1.19+
-- Helm 3.0+
-- Configured StorageClass for persistent volumes
-- **For VPN**: VPN provider credentials (see Configuration section)
+| Provider | Configuration Key |
+|----------|------------------|
+| NordVPN | `nordvpn` |
+| ProtonVPN | `protonvpn` |
+| ExpressVPN | `expressvpn` |
+| Surfshark | `surfshark` |
+| Mullvad | `mullvad` |
+| Private Internet Access | `private internet access` |
+| Windscribe | `windscribe` |
 
-## ⚙️ Configuration
+### VPN Protocols
 
-### VPN Setup
+- **OpenVPN**: Traditional VPN protocol, widely supported
+- **WireGuard**: Modern, faster VPN protocol (where supported by provider)
 
-#### NordVPN Credentials
-
-**For OpenVPN:**
-1. Go to [NordVPN Manual Configuration](https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/service-credentials/)
-2. Generate service credentials (NOT your regular login)
-3. Use the service username/password in configuration
-
-**For Wireguard:**
-1. Go to NordVPN manual setup section
-2. Generate a Wireguard private key
-3. Use the private key in configuration
-
-#### Other VPN Providers
-
-Gluetun supports many providers. Change `serviceProvider` to:
-- `expressvpn`
-- `surfshark`
-- `mullvad`
-- `privatevpn`
-- And many more...
-
-### Server Selection
+### Essential Configuration
 
 ```yaml
-vpn:
-  serverCountries: "Spain,Netherlands"  # Comma-separated countries
-  serverRegions: "Madrid,Barcelona"     # Specific regions
-  serverCities: "Madrid"                # Specific cities
-  serverCategories: "P2P"               # Server categories (if supported)
-```
-
-### Recommended Configuration
-
-```yaml
-vpn:
+gluetun:
   enabled: true
-  serviceProvider: "nordvpn"
-  vpnType: "openvpn"              # or "wireguard"
-  
-  # OpenVPN credentials
-  openvpnUser: "your-service-username"
-  openvpnPassword: "your-service-password"
-  
-  # Server selection
-  serverCountries: "Spain,Netherlands"
-  
-  # Health check
-  healthCheckUrl: "google.com:443"
+  vpn:
+    provider: "nordvpn"           # Your VPN provider
+    type: "openvpn"               # openvpn or wireguard
+    serverCountries: "Netherlands" # Target countries
+  credentials:
+    create: true                  # Create secret for credentials
+    username: "your-username"     # VPN service username
+    password: "your-password"     # VPN service password
 
-persistence:
-  downloads:
-    enabled: true
-    # Option 1: Create new PVC
-    size: 500Gi
-    storageClass: "fast-storage"
-    
-    # Option 2: Use shared PVC with subPath (recommended for *arr integration)
-    existingClaim: "shared-media-pvc"
-    subPath: "downloads"          # Share downloads folder with Sonarr/Radarr
+qbittorrent:
+  persistence:
+    downloads:
+      enabled: true
+      size: "100Gi"               # Adjust for your needs
 ```
 
-### Shared Storage with *arr Applications
+## Values Reference
 
-For optimal integration with Sonarr/Radarr, use a shared PVC:
+### Global Settings
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `replicaCount` | Number of pod replicas | `1` |
+| `nameOverride` | Override chart name | `""` |
+| `fullnameOverride` | Override full resource names | `""` |
+
+### Gluetun VPN Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `gluetun.enabled` | Enable Gluetun VPN sidecar | `true` |
+| `gluetun.image.repository` | Gluetun image repository | `qmcgaw/gluetun` |
+| `gluetun.image.tag` | Gluetun image tag | `v3.40.0` |
+| `gluetun.vpn.provider` | VPN service provider | `nordvpn` |
+| `gluetun.vpn.type` | VPN protocol type | `openvpn` |
+| `gluetun.vpn.serverCountries` | Target server countries | `Netherlands` |
+| `gluetun.credentials.create` | Create credentials secret | `true` |
+| `gluetun.credentials.username` | VPN username | `""` |
+| `gluetun.credentials.password` | VPN password | `""` |
+
+### qBittorrent Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `qbittorrent.image.repository` | qBittorrent image | `linuxserver/qbittorrent` |
+| `qbittorrent.image.tag` | qBittorrent image tag | `5.1.0` |
+| `qbittorrent.bittorrentPort` | BitTorrent traffic port | `6881` |
+| `qbittorrent.persistence.config.enabled` | Enable config persistence | `true` |
+| `qbittorrent.persistence.config.size` | Config volume size | `2Gi` |
+| `qbittorrent.persistence.downloads.enabled` | Enable downloads persistence | `true` |
+| `qbittorrent.persistence.downloads.size` | Downloads volume size | `2Gi` |
+
+### Network & Access
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `service.type` | Kubernetes service type | `ClusterIP` |
+| `service.port` | Service port | `8080` |
+| `ingress.enabled` | Enable ingress | `false` |
+| `ingress.hosts[0].host` | Ingress hostname | `qbittorrent.example.com` |
+
+## Usage Examples
+
+### NordVPN with OpenVPN
 
 ```yaml
-# Single PVC structure:
-shared-media-pvc/
-├── downloads/              # qBittorrent writes here, *arr apps read from here
-├── media/
-│   ├── tv-shows/          # Sonarr manages, Bazarr reads
-│   └── movies/            # Radarr manages, Bazarr reads
-└── incomplete/            # qBittorrent temp downloads
+gluetun:
+  vpn:
+    provider: "nordvpn"
+    type: "openvpn"
+    serverCountries: "United States"
+  credentials:
+    username: "your-nordvpn-email"
+    password: "your-nordvpn-password"
 ```
 
-Configuration for shared setup:
+### ProtonVPN with WireGuard
+
 ```yaml
-vpn:
-  enabled: true
-  serviceProvider: "nordvpn"
-  vpnType: "openvpn"
-  openvpnUser: "your-service-username"
-  openvpnPassword: "your-service-password"
-  serverCountries: "Spain,Netherlands"
-
-persistence:
-  downloads:
-    enabled: true
-    existingClaim: "shared-media-pvc"
-    subPath: "downloads"
-
-## 📊 Configuration Examples
-
-### Basic Development Setup
-```yaml
-# values-dev.yaml
-persistence:
-  downloads:
-    enabled: true
-    size: 10Gi
-
-service:
-  webui:
-    type: NodePort
-
-ingress:
-  enabled: false
+gluetun:
+  vpn:
+    provider: "protonvpn"
+    type: "wireguard"
+    serverCountries: "Switzerland,Netherlands"
+  credentials:
+    username: "protonvpn-username"
+    password: "protonvpn-password"
 ```
 
-### Production Setup with VPN
+### Using Existing Secret
+
 ```yaml
-# values-prod.yaml
-vpn:
-  enabled: true
-  serviceProvider: "nordvpn"
-  vpnType: "openvpn"
-  openvpnUser: "your-service-username"
-  openvpnPassword: "your-service-password"
-  serverCountries: "Spain"
-
-persistence:
-  config:
-    enabled: true
-    size: 5Gi
-    storageClass: "fast-ssd"
-  downloads:
-    enabled: true
-    size: 2Ti
-    storageClass: "bulk-storage"
-
-ingress:
-  enabled: true
-  className: "nginx"
-  host: "torrents.mydomain.com"
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-  tls:
-    enabled: true
-    secretName: "torrents-tls"
-
-resources:
-  limits:
-    cpu: 1000m
-    memory: 1Gi
-  requests:
-    cpu: 200m
-    memory: 256Mi
-
-vpn:
-  resources:
-    limits:
-      cpu: 200m
-      memory: 128Mi
-    requests:
-      cpu: 50m
-      memory: 64Mi
+gluetun:
+  credentials:
+    create: false
+    existingSecret: "my-vpn-secret"
+    usernameKey: "vpn-user"
+    passwordKey: "vpn-pass"
 ```
 
-### Install with values file
+## Security Considerations
+
+- **Network Isolation**: All qBittorrent traffic is routed through VPN
+- **Kill Switch**: Built-in firewall prevents traffic leaks if VPN disconnects
+- **Privileged Container**: Gluetun runs privileged for VPN functionality
+- **Local Network Access**: Configured to allow access from Kubernetes networks
+
+## Troubleshooting
+
+### Check VPN Connection
+
 ```bash
-helm install qbittorrent qbittorrent/qbittorrent -f values-prod.yaml
-```
+# Check Gluetun logs
+kubectl logs <pod-name> -c gluetun
 
-## 🔧 Configuration Parameters
-
-### Main Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `replicaCount` | Number of replicas | `1` |
-| `image.repository` | Image repository | `linuxserver/qbittorrent` |
-| `image.tag` | Image tag | `latest` |
-| `env.PUID` | User ID | `1000` |
-| `env.PGID` | Group ID | `1000` |
-| `env.TZ` | Timezone | `Etc/UTC` |
-| `env.WEBUI_PORT` | WebUI port | `8080` |
-
-### VPN Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `vpn.enabled` | Enable VPN sidecar | `false` |
-| `vpn.serviceProvider` | VPN provider (nordvpn, expressvpn, etc.) | `"nordvpn"` |
-| `vpn.vpnType` | VPN type (openvpn, wireguard) | `"openvpn"` |
-| `vpn.openvpnUser` | OpenVPN username | `""` |
-| `vpn.openvpnPassword` | OpenVPN password | `""` |
-| `vpn.wireguardPrivateKey` | Wireguard private key | `""` |
-| `vpn.serverCountries` | Server countries | `"United States"` |
-| `vpn.serverRegions` | Server regions | `""` |
-| `vpn.serverCities` | Server cities | `""` |
-| `vpn.serverHostnames` | Specific server hostnames | `""` |
-| `vpn.serverCategories` | Server categories | `""` |
-| `vpn.healthCheckUrl` | Health check URL | `"google.com:443"` |
-
-### Services
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `service.webui.enabled` | Enable WebUI service | `true` |
-| `service.webui.type` | Service type | `ClusterIP` |
-| `service.webui.port` | Service port | `8080` |
-| `service.torrenting.enabled` | Enable torrenting service | `false` |
-
-### Storage
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `persistence.config.enabled` | Enable config volume | `true` |
-| `persistence.config.size` | Config volume size | `1Gi` |
-| `persistence.downloads.enabled` | Enable downloads volume | `false` |
-| `persistence.downloads.size` | Downloads volume size | `100Gi` |
-| `persistence.downloads.existingClaim` | Use existing PVC | `""` |
-| `persistence.downloads.subPath` | Subpath within PVC | `""` |
-
-### Ingress
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `ingress.enabled` | Enable Ingress | `false` |
-| `ingress.className` | Ingress class | `""` |
-| `ingress.host` | Hostname | `qbittorrent.local` |
-| `ingress.tls.enabled` | Enable TLS | `false` |
-
-## 🔍 Verification and Troubleshooting
-
-### Verify VPN is working
-```bash
-# Check external IP (should be VPN server IP)
-kubectl exec deployment/qbittorrent -c qbittorrent -- curl -s ifconfig.me
-
-# Verify VPN connection
-kubectl logs deployment/qbittorrent -c gluetun
-
-# View qBittorrent logs
-kubectl logs deployment/qbittorrent -c qbittorrent
-```
-
-### Access WebUI
-```bash
-# Local port forward
-kubectl port-forward deployment/qbittorrent 8080:8080
-
-# Access at: http://localhost:8080
-# Default user: admin
-# Password: check container logs
+# Verify IP address through VPN
+kubectl exec <pod-name> -c qbittorrent -- curl -s ifconfig.me
 ```
 
 ### Common Issues
 
-#### VPN won't connect
-```bash
-# Verify credentials and configuration
-kubectl describe pod -l app=qbittorrent
+1. **VPN Not Connecting**: Check credentials and provider settings
+2. **No Internet Access**: Verify firewall settings and allowed subnets
+3. **qBittorrent Unreachable**: Check service configuration and firewall rules
 
-# View detailed VPN logs
-kubectl logs deployment/qbittorrent -c gluetun -f
+### Debug Mode
+
+Enable debug logging:
+
+```yaml
+gluetun:
+  settings:
+    LOG_LEVEL: "debug"
+    FIREWALL_DEBUG: "on"
 ```
 
-#### Slow downloads
-- Use specific countries: `vpn.serverCountries: "Spain,Netherlands"`
-- Try Wireguard: `vpn.vpnType: "wireguard"`
-- Check server categories if supported
+## Requirements
 
-#### WebUI inaccessible
-- Configure Ingress properly
-- Use port-forward for direct access
-- Check gluetun logs for network issues
+- Kubernetes 1.19+
+- Helm 3.0+
+- VPN service subscription with supported provider
+- Storage class for persistent volumes
 
-## 🔐 Security
+## Contributing
 
-### Security Recommendations
-
-1. **Always use VPN** for torrenting
-2. **Change default password** immediately
-3. **Use basic authentication** on Ingress
-4. **Use Kubernetes secrets** for VPN credentials
-5. **Monitor logs** regularly
-
-### Secret Management
-
-For sensitive credentials:
-```bash
-# Create secret for VPN credentials
-kubectl create secret generic vpn-credentials \
-  --from-literal=openvpn-user="your-username" \
-  --from-literal=openvpn-password="your-password" \
-  --from-literal=wireguard-private-key="your-key"
-
-# Use in values.yaml
-vpn:
-  credentialsSecret:
-    name: "vpn-credentials"
-    openvpnUserKey: "openvpn-user"
-    openvpnPasswordKey: "openvpn-password"
-    wireguardPrivateKeyKey: "wireguard-private-key"
-```
-
-## 🔗 Links
-
-- [qBittorrent](https://github.com/qbittorrent/qBittorrent)
-- [Gluetun VPN Client](https://github.com/qdm12/gluetun)
-- [NordVPN Manual Configuration](https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/)
-- [Gluetun Wiki](https://github.com/qdm12/gluetun-wiki)
+This chart is part of the homelab-charts collection. Please submit issues and pull requests to the main repository.
