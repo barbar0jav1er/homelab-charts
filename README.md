@@ -25,7 +25,7 @@ helm repo update
 | **jellyseerr** | Media request and discovery tool for Jellyfin and Plex servers | 0.1.0 | latest |
 | **pihole** | Network-wide DNS ad-blocker with DNSCrypt-proxy integration | Latest | 2025.08.0 |
 | **prowlarr** | Centralized indexer manager for all *arr applications | 0.1.2 | latest |
-| **qbittorrent** | qBittorrent with Gluetun VPN sidecar for secure torrenting | 0.4.0 | 5.1.0 |
+| **qbittorrent** | qBittorrent with Gluetun VPN sidecar for secure torrenting | 0.4.1 | 5.1.0 |
 | **radarr** | Movie collection manager with simplified media volume configuration | 0.2.2 | latest |
 | **sonarr** | TV series collection manager with automated episode monitoring | 0.1.2 | latest |
 
