@@ -1,0 +1,33 @@
+apiVersion: v2
+name: transmission-openvpn
+description: Transmission BitTorrent client with OpenVPN support for Kubernetes
+type: application
+version: 0.1.0
+appVersion: "latest"
+
+home: https://haugene.github.io/docker-transmission-openvpn
+
+maintainers:
+  - name: Barbaro Javier
+    email: barbar0jav1er@callbackhell.run
+
+keywords:
+  - transmission
+  - openvpn
+  - transmission-openvpn
+  - torrent
+  - vpn
+  - nordvpn
+
+sources:
+  - https://github.com/haugene/docker-transmission-openvpn
+
+annotations:
+  artifacthub.io/images: |
+    - name: haugene/transmission-openvpn
+      image: docker.io/haugene/transmission-openvpn:latest
+  artifacthub.io/license: MIT
+  artifacthub.io/changes: |
+    - Initial chart release
+    - Support for multiple VPN providers
+    - Configurable storage and networking optionse

@@ -1,0 +1,173 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "transmission-openvpn.fullname" . }}
+  labels:
+    {{- include "transmission-openvpn.labels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "transmission-openvpn.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "transmission-openvpn.selectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: {{ .Values.hostNetwork }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "transmission-openvpn.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- with .Values.dnsConfig }}
+      dnsConfig:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            # Basic environment variables
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            
+            # OpenVPN provider
+            {{- if .Values.openvpn.provider }}
+            - name: OPENVPN_PROVIDER
+              value: {{ .Values.openvpn.provider | quote }}
+            {{- end }}
+            
+            # Transmission web port
+            - name: TRANSMISSION_WEB_UI
+              value: {{ .Values.transmission.webPort | default .Values.service.port | quote }}
+            
+            # OpenVPN credentials from secret
+            {{- if .Values.openvpn.credentials.create }}
+            - name: OPENVPN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "transmission-openvpn.fullname" . }}-openvpn-credentials
+                  key: {{ .Values.openvpn.credentials.usernameKey }}
+            - name: OPENVPN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "transmission-openvpn.fullname" . }}-openvpn-credentials
+                  key: {{ .Values.openvpn.credentials.passwordKey }}
+            {{- else if .Values.openvpn.credentials.existingSecret }}
+            - name: OPENVPN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.openvpn.credentials.existingSecret }}
+                  key: {{ .Values.openvpn.credentials.usernameKey }}
+            - name: OPENVPN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.openvpn.credentials.existingSecret }}
+                  key: {{ .Values.openvpn.credentials.passwordKey }}
+            {{- end }}
+            
+            # OpenVPN additional config
+            {{- range $key, $value := .Values.openvpn.config }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            
+            # Transmission settings
+            {{- range $key, $value := .Values.transmission.settings }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            
+            # Extra environment variables
+            {{- range $key, $value := .Values.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            
+          volumeMounts:
+            {{- if .Values.mountTunDevice }}
+            - mountPath: /dev/net/tun
+              name: dev-net-tun
+            {{- end }}
+            - mountPath: /data
+              name: data
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+              {{- if .Values.hostPort.enabled }}
+              hostPort: {{ .Values.hostPort.port }}
+              {{- end }}
+            {{- with .Values.additionalPorts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.sidecarContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.mountTunDevice }}
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+        {{- end }}
+        - name: data
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "transmission-openvpn.fullname" .) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}

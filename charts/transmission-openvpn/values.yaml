@@ -1,0 +1,142 @@
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: haugene/transmission-openvpn
+  pullPolicy: IfNotPresent
+  tag: ""
+
+env:
+  PUID: "1000"
+  PGID: "1000"
+  CREATE_TUN_DEVICE: "true"
+
+service:
+  type: ClusterIP
+  port: 9091
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: transmission.local
+  tls:
+    enabled: false
+    secretName: transmission-tls
+
+persistence:
+  enabled: false
+  size: 64Gi
+  storageClass: ""
+  existingClaim: ""  # Use existing PVC instead of creating a new one
+  accessModes:
+    - ReadWriteOnce
+  annotations: {}
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe: {}
+
+readinessProbe:
+  tcpSocket:
+    port: 9091
+
+podSecurityContext: {}
+
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# OpenVPN Configuration
+openvpn:
+  # VPN provider configuration
+  provider: ""  # e.g., NORDVPN, SURFSHARK, etc.
+  
+  # VPN credentials
+  credentials:
+    create: true
+    username: ""
+    password: ""
+    existingSecret: ""
+    usernameKey: "username"
+    passwordKey: "password"
+  
+  # Additional OpenVPN environment variables
+  config: {}
+    # OPENVPN_OPTS: "--inactive 3600 --ping 10 --ping-exit 60"
+    # NORDVPN_COUNTRY: "Netherlands"
+    # NORDVPN_CATEGORY: "legacy_p2p"
+
+# Transmission Configuration  
+transmission:
+  # Web UI port
+  webPort: 9091
+  
+  # Transmission settings
+  settings: {}
+    # TRANSMISSION_SPEED_LIMIT_UP: "2048"
+    # TRANSMISSION_SPEED_LIMIT_DOWN: "4096"
+    # TRANSMISSION_RATIO_LIMIT: "2"
+    # TRANSMISSION_RATIO_LIMIT_ENABLED: "true"
+
+# Additional environment variables (non-sensitive)
+extraEnv: {}
+
+# Mount /dev/net/tun device (required for VPN)
+mountTunDevice: true
+
+# DNS configuration
+dnsConfig: {}
+dnsPolicy: ClusterFirst
+
+# Host networking
+hostNetwork: false
+
+hostPort:
+  enabled: false
+  port: 9091
+
+# Additional volumes and volume mounts
+extraVolumes: []
+extraVolumeMounts: []
+
+# Scheduling
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Common labels for all resources
+commonLabels: {}
+
+# Additional ports
+additionalPorts: []
+additionalServicePorts: []
+
+# Init and sidecar containers
+initContainers: []
+sidecarContainers: []
+
+# Image pull secrets
+imagePullSecrets: []
+
+# Deployment strategy
+strategy:
+  type: Recreate

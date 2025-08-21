@@ -28,6 +28,7 @@ helm repo update
 | **qbittorrent** | qBittorrent with Gluetun VPN sidecar for secure torrenting | 0.4.1 | 5.1.0 |
 | **radarr** | Movie collection manager with simplified media volume configuration | 0.2.2 | latest |
 | **sonarr** | TV series collection manager with automated episode monitoring | 0.1.2 | latest |
+| **transmission-openvpn** | Transmission BitTorrent client with OpenVPN support | 0.1.0 | latest |
 
 ## 💻 Installation Examples
 
