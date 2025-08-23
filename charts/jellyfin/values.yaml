@@ -41,9 +41,12 @@ persistence:
   
   cache:
     enabled: true
+    type: emptyDir  # pvc or emptyDir
     storageClass: ""
     accessMode: ReadWriteOnce
     size: 5Gi
+    emptyDir:
+      sizeLimit: 5Gi
   
   media:
     enabled: false

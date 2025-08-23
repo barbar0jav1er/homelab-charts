@@ -2,7 +2,7 @@ apiVersion: v2
 name: jellyfin
 description: A Helm chart for Jellyfin Media Server
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "10.10.7"
 keywords:
   - jellyfin
@@ -14,3 +14,13 @@ sources:
 maintainers:
   - name: Barbaro Javier
     email: barbar0jav1er@callbackhell.run
+
+annotations:
+  artifacthub.io/images: |
+    - name: jellyfin/jellyfin
+      image: docker.io/jellyfin/jellyfin:10.10.7
+  artifacthub.io/license: GPL-2.0
+  artifacthub.io/changes: |
+    - Add emptyDir support for cache volume
+    - Set emptyDir as default cache type for better performance
+    - Support both PVC and emptyDir cache options

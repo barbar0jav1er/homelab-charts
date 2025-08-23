@@ -103,8 +103,15 @@ spec:
       {{- end }}
       {{- if .Values.persistence.cache.enabled }}
       - name: cache
+        {{- if eq .Values.persistence.cache.type "emptyDir" }}
+        emptyDir:
+          {{- if .Values.persistence.cache.emptyDir.sizeLimit }}
+          sizeLimit: {{ .Values.persistence.cache.emptyDir.sizeLimit }}
+          {{- end }}
+        {{- else }}
         persistentVolumeClaim:
           claimName: {{ include "jellyfin.fullname" . }}-cache
+        {{- end }}
       {{- end }}
       {{- if .Values.persistence.media.enabled }}
       - name: media

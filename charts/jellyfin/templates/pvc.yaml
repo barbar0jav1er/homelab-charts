@@ -17,7 +17,7 @@ spec:
   {{- end }}
 {{- end }}
 
-{{- if .Values.persistence.cache.enabled }}
+{{- if and .Values.persistence.cache.enabled (ne .Values.persistence.cache.type "emptyDir") }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
