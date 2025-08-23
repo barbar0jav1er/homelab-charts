@@ -12,7 +12,10 @@ service:
 
 persistence:
   enabled: false
+  storageClass: ""
+  accessMode: ReadWriteOnce
   size: 8Gi
+  existingClaim: ""
 
 actualBudget:
   port: 5006

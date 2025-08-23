@@ -116,5 +116,5 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "actual-server.fullname" . }}-data
+            claimName: {{ include "actual-server.pvcName" . }}
       {{- end }}

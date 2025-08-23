@@ -1,7 +1,7 @@
 apiVersion: v2
 name: actual-server
 description: A Helm chart for Actual Budget - A local-first personal finance tool
-version: 0.2.0
+version: 0.3.0
 appVersion: "25.8.0"
 home: https://actualbudget.org
 sources:
@@ -17,3 +17,14 @@ keywords:
   - actual-server
 type: application
 icon: https://actualbudget.org/img/actual.png
+
+annotations:
+  artifacthub.io/images: |
+    - name: actualbudget/actual-server
+      image: docker.io/actualbudget/actual-server:25.8.0
+  artifacthub.io/license: MIT
+  artifacthub.io/changes: |
+    - Add storageClass support for persistence configuration
+    - Add existingClaim support for using existing PVCs
+    - Add accessMode configuration for PVC access modes
+    - Add helper function for PVC name resolution

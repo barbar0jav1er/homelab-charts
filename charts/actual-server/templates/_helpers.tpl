@@ -77,3 +77,14 @@ OpenID client secret name and key
 {{- "client-secret" }}
 {{- end }}
 {{- end }}
+
+{{/*
+PVC name to use for data storage
+*/}}
+{{- define "actual-server.pvcName" -}}
+{{- if .Values.persistence.existingClaim }}
+{{- .Values.persistence.existingClaim }}
+{{- else }}
+{{- printf "%s-data" (include "actual-server.fullname" .) }}
+{{- end }}
+{{- end }}
