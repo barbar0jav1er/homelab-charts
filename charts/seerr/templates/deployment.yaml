@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "jellyseerr.fullname" . }}
+  name: {{ include "seerr.fullname" . }}
   labels:
-    {{- include "jellyseerr.labels" . | nindent 4 }}
+    {{- include "seerr.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "jellyseerr.selectorLabels" . | nindent 6 }}
+      {{- include "seerr.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -16,7 +16,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "jellyseerr.selectorLabels" . | nindent 8 }}
+        {{- include "seerr.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.podSecurityContext }}
       securityContext:
@@ -52,7 +52,7 @@ spec:
         - name: config
           {{- if .Values.persistence.config.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.config.existingClaim | default (printf "%s-config" (include "jellyseerr.fullname" .)) }}
+            claimName: {{ .Values.persistence.config.existingClaim | default (printf "%s-config" (include "seerr.fullname" .)) }}
           {{- else }}
           emptyDir: {}
           {{- end }}
