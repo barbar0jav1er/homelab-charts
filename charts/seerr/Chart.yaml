@@ -2,7 +2,7 @@ apiVersion: v2
 name: seerr
 description: A Helm chart for Seerr - media request and discovery tool
 type: application
-version: 0.1.5
+version: 0.1.6
 appVersion: "v3.0.1"
 home: https://github.com/seerr-team/seerr
 sources:
