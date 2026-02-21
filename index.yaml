@@ -499,6 +499,27 @@ entries:
   seerr:
   - apiVersion: v2
     appVersion: 3.0.1
+    created: "2026-02-21T12:23:10.329498491Z"
+    description: A Helm chart for Seerr - media request and discovery tool
+    digest: c6f8594064b2a7e3cf889f2686936108467d7584f0a9a41950ea8f85279046d8
+    home: https://github.com/seerr-team/seerr
+    keywords:
+    - media
+    - jellyfin
+    - plex
+    - requests
+    - discovery
+    maintainers:
+    - name: homelab-charts
+    name: seerr
+    sources:
+    - https://github.com/seerr-team/seerr
+    type: application
+    urls:
+    - https://github.com/barbar0jav1er/homelab-charts/releases/download/seerr-0.1.4/seerr-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 3.0.1
     created: "2026-02-21T12:15:45.421731255Z"
     description: A Helm chart for Seerr - media request and discovery tool
     digest: 22bf36ec6a1abbdfa736f6e92f15c8bf6379d55563b987830192bf7f7b893952
@@ -612,4 +633,4 @@ entries:
     urls:
     - https://github.com/barbar0jav1er/homelab-charts/releases/download/transmission-openvpn-0.1.0/transmission-openvpn-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-21T12:15:45.421787801Z"
+generated: "2026-02-21T12:23:10.329546211Z"
