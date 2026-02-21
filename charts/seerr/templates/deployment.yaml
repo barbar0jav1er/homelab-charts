@@ -35,6 +35,27 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if eq .Values.database.type "postgres" }}
+            - name: DB_TYPE
+              value: "postgres"
+            - name: DB_HOST
+              value: {{ .Values.database.postgres.host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.database.postgres.port | quote }}
+            - name: DB_USER
+              value: {{ .Values.database.postgres.user | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.postgres.database | quote }}
+            - name: DB_PASS
+              {{- if .Values.database.postgres.existingSecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.postgres.existingSecret }}
+                  key: {{ .Values.database.postgres.passwordKey }}
+              {{- else }}
+              value: {{ .Values.database.postgres.password | quote }}
+              {{- end }}
+            {{- end }}
           volumeMounts:
             - name: config
               mountPath: /app/config

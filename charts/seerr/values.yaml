@@ -15,6 +15,19 @@ env:
   PGID: "999"
   TZ: "Etc/UTC"
 
+# Database configuration (Seerr 3.0+ supports PostgreSQL)
+database:
+  type: "sqlite" # or "postgres"
+  # Optional: For PostgreSQL
+  postgres:
+    host: ""
+    port: 5432
+    user: ""
+    password: ""
+    database: "seerr"
+    existingSecret: ""
+    passwordKey: "password"
+
 service:
   type: ClusterIP
   port: 5055
