@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "jellyseerr.fullname" . }}-config
+  name: {{ include "seerr.fullname" . }}-config
   labels:
-    {{- include "jellyseerr.labels" . | nindent 4 }}
+    {{- include "seerr.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
